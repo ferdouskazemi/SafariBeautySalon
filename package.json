@@ -1,0 +1,23 @@
+{
+  "name": "safari-beauty-salon",
+  "private": true,
+  "packageManager": "pnpm@10.18.3",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @safari/shared build && pnpm --parallel --filter @safari/shared --filter @safari/api --filter @safari/web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "format": "prettier --write .",
+    "db:up": "docker compose up -d db",
+    "db:migrate": "pnpm --filter @safari/api db:migrate",
+    "db:seed": "pnpm --filter @safari/api db:seed"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.7.0"
+  }
+}

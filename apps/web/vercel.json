@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "pnpm install --frozen-lockfile --filter @safari/web...",
+  "buildCommand": "pnpm --filter @safari/shared build && pnpm --filter @safari/web build",
+  "regions": ["fra1"]
+}

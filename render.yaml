@@ -1,0 +1,35 @@
+# Render Blueprint: the NestJS API. The site runs on Vercel and the database on Neon.
+# Guide: docs/deploy.md
+services:
+  - type: web
+    name: safari-api
+    runtime: node
+    plan: free
+    # Closest Render region to Kabul; pick the same region (AWS Frankfurt) on Neon.
+    region: frankfurt
+    buildCommand: >-
+      npx --yes pnpm@10.18.3 install --frozen-lockfile &&
+      npx --yes pnpm@10.18.3 --filter @safari/shared build &&
+      npx --yes pnpm@10.18.3 --filter @safari/api build
+    # Free instances have no pre-deploy step, so pending migrations run on every start.
+    startCommand: cd apps/api && npx prisma migrate deploy && NODE_ENV=production node dist/main.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: '22'
+      # Neon connection string (Dashboard -> Connect). Entered by hand, never committed.
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      # The site's public address on Vercel (update it if Vercel gives a different name).
+      - key: WEB_ORIGIN
+        value: https://safari-beauty-salon.vercel.app
+      - key: COOKIE_SECURE
+        value: 'true'
+      # Browser -> Vercel (rewrite) -> Render's load balancer -> API.
+      - key: TRUST_PROXY_HOPS
+        value: '2'

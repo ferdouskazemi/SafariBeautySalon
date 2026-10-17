@@ -1,0 +1,89 @@
+@import 'tailwindcss';
+
+/*
+ * Safari Beauty Salon design tokens: "Desert Futurism".
+ * Black-and-gold palette on a near-black olive base, with one gold accent taken from the logo.
+ * The brand is dark by design (a night-time desert), so the theme is locked to dark.
+ *
+ * Shape rule: interactive controls are full pills, inputs are 14px, surfaces are 24px.
+ */
+@theme {
+  --color-bg: #0d0e0c;
+  --color-surface: #151613;
+  --color-raised: #1e201b;
+  --color-line: rgb(236 230 218 / 0.1);
+  --color-line-strong: rgb(236 230 218 / 0.2);
+  --color-fg: #ece6da;
+  --color-muted: #a9a395;
+  --color-accent: #d6b370;
+  --color-accent-hover: #e4c78a;
+  --color-accent-soft: rgb(214 179 112 / 0.12);
+  --color-on-accent: #1b140a;
+  --color-danger: #f08a76;
+  --color-success: #93c9a0;
+
+  --font-sans: var(--font-vazirmatn), ui-sans-serif, system-ui, sans-serif;
+  --font-latin: var(--font-unbounded), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-field: 0.875rem;
+  --radius-surface: 1.5rem;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 40s linear infinite;
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(50%);
+    }
+  }
+}
+
+/* Documented z-index scale. */
+:root {
+  --z-header: 40;
+  --z-overlay: 50;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    @apply bg-bg font-sans text-fg antialiased;
+    font-feature-settings: 'ss01';
+  }
+
+  ::selection {
+    @apply bg-accent text-on-accent;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+
+  /* Phone numbers, codes and other Latin runs stay left-to-right inside RTL text. */
+  [dir='ltr'] {
+    unicode-bidi: isolate;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
