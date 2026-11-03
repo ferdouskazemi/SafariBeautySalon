@@ -14,7 +14,8 @@ export const metadata: Metadata = {
 export default function BookingPage() {
   return (
     <Container className="pt-22 pb-24 md:pt-32">
-      <h1 className="mb-4 text-sm font-bold text-accent md:mb-6">رزرو نوبت</h1>
+      {/* The header already says "رزرو نوبت"; keep the heading for screen readers, not the eye. */}
+      <h1 className="sr-only">رزرو نوبت</h1>
       <Suspense fallback={<FlowSkeleton />}>
         <BookingContent />
       </Suspense>

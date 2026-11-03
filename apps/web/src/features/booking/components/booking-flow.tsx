@@ -172,13 +172,7 @@ export function BookingFlow({ catalog, team }: BookingFlowProps) {
 
       <div className="mt-6 grid gap-10 md:mt-8 lg:grid-cols-12">
         {/* min-w-0: the swipeable day row must scroll inside the column, not widen the page. */}
-        <motion.div
-          key={screen}
-          className="min-w-0 lg:col-span-8"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        >
+        <div key={screen} className="min-w-0 animate-step-in lg:col-span-8">
           <h2 className="mb-5 text-2xl font-black md:mb-6 md:text-3xl">{SCREEN_TITLES[screen]}</h2>
 
           {screen === 'services' && (
@@ -204,7 +198,7 @@ export function BookingFlow({ catalog, team }: BookingFlowProps) {
               }}
             />
           )}
-        </motion.div>
+        </div>
 
         <aside className="hidden lg:col-span-4 lg:block">
           <div className="sticky top-24">
