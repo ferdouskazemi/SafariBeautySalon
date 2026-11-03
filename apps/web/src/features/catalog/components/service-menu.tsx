@@ -44,7 +44,9 @@ export function ServiceMenu({ services, categories }: ServiceMenuProps) {
               onClick={() => setActive(category)}
               onKeyDown={(event) => onKeyDown(event, index)}
               className={cn(
-                'relative rounded-full px-5 py-2.5 text-sm font-medium transition',
+                // isolate: the gold pill sits at -z-10 and must stay inside this button, not behind
+                // the section's own background (dark text on it would be unreadable).
+                'relative isolate rounded-full px-5 py-2.5 text-sm font-medium transition',
                 selected ? 'text-on-accent' : 'text-muted hover:text-fg',
               )}
             >

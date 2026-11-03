@@ -61,7 +61,10 @@ export function BookingFlow({ catalog, team }: BookingFlowProps) {
     return initialBookingState({
       packageId: known(params.get('package'), catalog.packages),
       serviceId: known(params.get('service'), catalog.services),
-      staffId: known(params.get('staff'), team),
+      staffId: known(
+        params.get('staff'),
+        team.filter((member) => member.isActive),
+      ),
       date: params.get('date'),
     });
   });
@@ -168,12 +171,15 @@ export function BookingFlow({ catalog, team }: BookingFlowProps) {
 
   return (
     <div className="pb-32 lg:pb-0">
-      <StepProgress step={step} onBack={stepIndex > 0 ? goBack : undefined} />
+      <StepProgress step={step} />
 
       <div className="mt-6 grid gap-10 md:mt-8 lg:grid-cols-12">
         {/* min-w-0: the swipeable day row must scroll inside the column, not widen the page. */}
         <div key={screen} className="min-w-0 animate-step-in lg:col-span-8">
-          <h2 className="mb-5 text-2xl font-black md:mb-6 md:text-3xl">{SCREEN_TITLES[screen]}</h2>
+          <div className="mb-5 flex items-center gap-3 md:mb-6">
+            {stepIndex > 0 && <BackButton onClick={goBack} />}
+            <h2 className="text-2xl font-black md:text-3xl">{SCREEN_TITLES[screen]}</h2>
+          </div>
 
           {screen === 'services' && (
             <ServicesStep
@@ -242,44 +248,47 @@ function cartItems(catalog: CatalogDto, { offering }: BookingState): CartItem[] 
   return offering.ids.flatMap((id) => catalog.services.filter((s) => s.id === id));
 }
 
-function StepProgress({ step, onBack }: { step: BookingStep; onBack?: () => void }) {
+/** Full width and centred: three equal bars, each with its label centred beneath it. */
+function StepProgress({ step }: { step: BookingStep }) {
   const index = BOOKING_STEPS.indexOf(step);
   return (
-    <div className="flex items-center gap-4">
-      <button
-        type="button"
-        onClick={onBack}
-        disabled={!onBack}
-        aria-label="مرحله قبل"
-        className="grid size-10 shrink-0 place-items-center rounded-full border border-line-strong transition hover:border-accent/60 disabled:invisible"
-      >
-        <ArrowRight size={18} />
-      </button>
-      <ol className="flex flex-1 gap-2" aria-label="مراحل رزرو">
-        {BOOKING_STEPS.map((s, i) => (
-          <li
-            key={s}
-            aria-current={s === step ? 'step' : undefined}
-            className="flex flex-1 flex-col gap-2"
+    <ol className="grid grid-cols-3 gap-2" aria-label="مراحل رزرو">
+      {BOOKING_STEPS.map((s, i) => (
+        <li
+          key={s}
+          aria-current={s === step ? 'step' : undefined}
+          className="flex flex-col items-center gap-2"
+        >
+          <span
+            className={cn(
+              'h-1 w-full rounded-full transition-colors',
+              i <= index ? 'bg-accent' : 'bg-line-strong',
+            )}
+          />
+          <span
+            className={cn(
+              'text-xs',
+              s === step ? 'font-bold text-fg' : i < index ? 'text-muted' : 'text-muted/60',
+            )}
           >
-            <span
-              className={cn(
-                'h-1 rounded-full transition-colors',
-                i <= index ? 'bg-accent' : 'bg-line-strong',
-              )}
-            />
-            <span
-              className={cn(
-                'text-xs',
-                s === step ? 'font-bold text-fg' : i < index ? 'text-muted' : 'text-muted/60',
-              )}
-            >
-              {STEP_LABELS[s]}
-            </span>
-          </li>
-        ))}
-      </ol>
-    </div>
+            {STEP_LABELS[s]}
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function BackButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="مرحله قبل"
+      className="grid size-10 shrink-0 place-items-center rounded-full border border-line-strong transition hover:border-accent/60"
+    >
+      <ArrowRight size={18} />
+    </button>
   );
 }
 

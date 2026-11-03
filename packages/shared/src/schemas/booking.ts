@@ -78,6 +78,12 @@ export const scheduleQuerySchema = z.object({
 });
 export type ScheduleQuery = z.output<typeof scheduleQuerySchema>;
 
+/** A barber's past and upcoming customers. Barbers always get their own, whatever is passed. */
+export const historyQuerySchema = z.object({
+  staffId: idSchema.optional(),
+});
+export type HistoryQuery = z.output<typeof historyQuerySchema>;
+
 export const updateAppointmentStatusSchema = z.object({
   status: z.enum(APPOINTMENT_STATUSES),
 });

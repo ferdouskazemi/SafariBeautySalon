@@ -62,11 +62,18 @@ export function ServicesStep({
             key={section.id}
             href={`#menu-${section.id}`}
             onClick={() => setActive(section.id)}
+            ref={(node) => {
+              // Keep the highlighted chip in view when the row scrolls sideways.
+              if (node && active === section.id) {
+                node.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+              }
+            }}
+            aria-current={active === section.id ? 'true' : undefined}
             className={cn(
-              'shrink-0 rounded-full px-4 py-2 text-sm font-medium transition',
+              'shrink-0 rounded-full border px-3 py-2.5 text-sm font-medium transition',
               active === section.id
-                ? 'bg-fg text-bg'
-                : 'border border-line-strong text-muted hover:text-fg',
+                ? 'border-accent bg-accent text-on-accent'
+                : 'border-line-strong text-muted hover:text-fg',
             )}
           >
             {section.label}

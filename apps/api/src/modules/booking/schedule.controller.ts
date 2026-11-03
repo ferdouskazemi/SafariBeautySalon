@@ -1,9 +1,11 @@
 import { Controller, Get, Param, Patch } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
+  historyQuerySchema,
   scheduleQuerySchema,
   updateAppointmentStatusSchema,
   type AppointmentDto,
+  type HistoryQuery,
   type ScheduleQuery,
   type UpdateAppointmentStatusData,
 } from '@safari/shared';
@@ -25,6 +27,15 @@ export class ScheduleController {
     @ZodQuery(scheduleQuerySchema) query: ScheduleQuery,
   ): Promise<AppointmentDto[]> {
     return this.booking.schedule(user, query);
+  }
+
+  /** One barber's customers over time: the latest appointments across all days. */
+  @Get('history')
+  history(
+    @CurrentUser() user: AuthUser,
+    @ZodQuery(historyQuerySchema) query: HistoryQuery,
+  ): Promise<AppointmentDto[]> {
+    return this.booking.history(user, query);
   }
 
   @Patch(':id/status')

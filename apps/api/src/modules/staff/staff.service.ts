@@ -27,12 +27,15 @@ export class StaffService {
     private readonly reviews: ReviewsService,
   ) {}
 
-  /** Bookable barbers for the public site. */
+  /**
+   * Every barber for the public site. Inactive ones are listed last and marked, so the page can
+   * show them as unavailable; availability only ever offers active barbers.
+   */
   async listPublic(): Promise<PublicStaffDto[]> {
     const [staff, ratings] = await Promise.all([
       this.prisma.user.findMany({
-        where: { role: 'STAFF', isActive: true },
-        orderBy: { createdAt: 'asc' },
+        where: { role: 'STAFF' },
+        orderBy: [{ isActive: 'desc' }, { createdAt: 'asc' }],
       }),
       this.reviews.ratingsByStaff(),
     ]);
@@ -122,6 +125,7 @@ function toPublicStaffDto(
     bio: user.bio,
     avatarUrl: user.avatarUrl,
     rating,
+    isActive: user.isActive,
   };
 }
 

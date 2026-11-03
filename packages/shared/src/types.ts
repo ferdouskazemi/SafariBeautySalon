@@ -49,6 +49,8 @@ export interface PublicStaffDto {
   bio: string | null;
   avatarUrl: string | null;
   rating: RatingSummary;
+  /** Inactive barbers are still listed publicly, but cannot be booked. */
+  isActive: boolean;
 }
 
 export interface WorkingHoursDto {
@@ -60,7 +62,6 @@ export interface WorkingHoursDto {
 export interface StaffDto extends PublicStaffDto {
   phone: string;
   role: Role;
-  isActive: boolean;
   workingHours: WorkingHoursDto[];
 }
 

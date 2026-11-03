@@ -124,7 +124,7 @@ export function TimeStep({
                   <Icon size={16} className="text-accent" />
                   {label}
                 </p>
-                <div className="grid grid-cols-4 gap-2 md:grid-cols-5">
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5">
                   {slots.map((s) => {
                     const selected = s.startsAt === slot?.startsAt;
                     return (
@@ -175,11 +175,7 @@ function StaffPills({
   onChange: (staffId: string | null) => void;
 }) {
   return (
-    <div
-      role="radiogroup"
-      aria-label="آرایشگر"
-      className="-mx-4 flex [scrollbar-width:none] gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:px-0"
-    >
+    <div role="radiogroup" aria-label="آرایشگر" className="flex flex-wrap gap-2">
       <Pill selected={value === null} onClick={() => onChange(null)}>
         <span className="grid size-7 place-items-center rounded-full bg-accent-soft text-accent">
           <Lightning size={14} weight="fill" />
@@ -187,7 +183,12 @@ function StaffPills({
         هر آرایشگر
       </Pill>
       {team.map((member) => (
-        <Pill key={member.id} selected={value === member.id} onClick={() => onChange(member.id)}>
+        <Pill
+          key={member.id}
+          selected={value === member.id}
+          disabled={!member.isActive}
+          onClick={() => onChange(member.id)}
+        >
           <span className="relative size-7 overflow-hidden rounded-full bg-raised">
             {member.avatarUrl ? (
               <Image
@@ -203,6 +204,7 @@ function StaffPills({
             )}
           </span>
           {member.fullName}
+          {!member.isActive && <span className="text-xs text-muted">· به‌زودی</span>}
         </Pill>
       ))}
     </div>
@@ -211,10 +213,12 @@ function StaffPills({
 
 function Pill({
   selected,
+  disabled,
   onClick,
   children,
 }: {
   selected: boolean;
+  disabled?: boolean;
   onClick: () => void;
   children: ReactNode;
 }) {
@@ -223,9 +227,11 @@ function Pill({
       type="button"
       role="radio"
       aria-checked={selected}
+      disabled={disabled}
       onClick={onClick}
       className={cn(
         'flex shrink-0 items-center gap-2 rounded-full border py-1.5 ps-1.5 pe-4 text-sm font-medium transition',
+        'disabled:cursor-not-allowed disabled:opacity-45',
         selected ? 'border-accent bg-accent-soft' : 'border-line-strong hover:border-fg/30',
       )}
     >
@@ -236,7 +242,10 @@ function Pill({
 
 function SlotsSkeleton() {
   return (
-    <div className="grid grid-cols-4 gap-2 md:grid-cols-5" aria-label="در حال بارگذاری">
+    <div
+      className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-5"
+      aria-label="در حال بارگذاری"
+    >
       {Array.from({ length: 12 }, (_, i) => (
         <Skeleton key={i} className="h-11 rounded-full" />
       ))}

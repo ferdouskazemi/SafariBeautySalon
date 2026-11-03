@@ -26,6 +26,10 @@ export function useNotificationAlerts(enabled: boolean) {
       seen.current.add(notification.id);
       if (notification.readAt) continue;
       const { title, body } = describeNotification(notification);
+      // With the tab in the background, a system notification reaches the phone or desktop too.
+      if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+        new Notification(title, { body, lang: 'fa', dir: 'rtl', tag: notification.id });
+      }
       toast(title, {
         description: body,
         duration: 10_000,

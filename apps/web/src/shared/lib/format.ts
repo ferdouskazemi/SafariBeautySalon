@@ -11,10 +11,12 @@ const ratingFormat = new Intl.NumberFormat(LOCALE, {
 });
 const timeFormat = new Intl.DateTimeFormat(LOCALE, {
   timeZone: SALON_TIMEZONE,
-  hour: '2-digit',
+  hour: 'numeric',
   minute: '2-digit',
-  hourCycle: 'h23',
+  hourCycle: 'h12',
 });
+/** The locale spells the day period out ("بعدازظهر"); slot buttons need the short form. */
+const DAY_PERIOD_SHORT: Record<string, string> = { قبل‌ازظهر: 'ق.ظ', بعدازظهر: 'ب.ظ' };
 const longDayFormat = new Intl.DateTimeFormat(CALENDAR_LOCALE, {
   timeZone: SALON_TIMEZONE,
   weekday: 'long',
@@ -54,7 +56,13 @@ export function formatDuration(minutes: number) {
   return `${formatNumber(hours)} ساعت و ${formatNumber(rest)} دقیقه`;
 }
 
-export const formatTime = (iso: string) => timeFormat.format(new Date(iso));
+/** 12-hour clock with Persian digits, e.g. "۲:۳۰ ب.ظ". */
+export function formatTime(iso: string) {
+  return timeFormat
+    .formatToParts(new Date(iso))
+    .map(({ type, value }) => (type === 'dayPeriod' ? (DAY_PERIOD_SHORT[value] ?? value) : value))
+    .join('');
+}
 
 /** e.g. "جمعه ۱۷ میزان" */
 export const formatLongDate = (iso: string) => longDayFormat.format(new Date(iso));

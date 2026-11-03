@@ -1,6 +1,7 @@
 import { ArrowLeft, UserCircle } from '@phosphor-icons/react/dist/ssr';
 import Image from 'next/image';
 import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { formatNumber, formatRating } from '@/shared/lib/format';
 import { Container, SectionTitle } from '@/shared/ui/container';
 import { EmptyState } from '@/shared/ui/feedback';
@@ -24,11 +25,7 @@ export async function TeamSection() {
             {team.map((member, index) => (
               <li key={member.id}>
                 <Reveal delay={index * 0.05}>
-                  <Link
-                    href={`/booking?staff=${member.id}`}
-                    aria-label={`رزرو نوبت با ${member.fullName}`}
-                    className="group grid grid-cols-[5rem_1fr_auto] items-center gap-5 py-6 md:grid-cols-[7rem_1.2fr_1.5fr_auto] md:gap-10"
-                  >
+                  <RowShell memberId={member.id} name={member.fullName} bookable={member.isActive}>
                     <div className="relative aspect-[3/4] overflow-hidden rounded-[var(--radius-field)] bg-raised">
                       {member.avatarUrl ? (
                         <Image
@@ -76,11 +73,17 @@ export async function TeamSection() {
                       )}
                     </div>
 
-                    <ArrowLeft
-                      size={22}
-                      className="text-muted transition duration-300 ease-out-expo group-hover:-translate-x-1 group-hover:text-accent"
-                    />
-                  </Link>
+                    {member.isActive ? (
+                      <ArrowLeft
+                        size={22}
+                        className="text-muted transition duration-300 ease-out-expo group-hover:-translate-x-1 group-hover:text-accent"
+                      />
+                    ) : (
+                      <span className="rounded-full border border-line-strong px-3 py-1 text-xs whitespace-nowrap text-muted">
+                        به‌زودی
+                      </span>
+                    )}
+                  </RowShell>
                 </Reveal>
               </li>
             ))}
@@ -88,5 +91,34 @@ export async function TeamSection() {
         )}
       </Container>
     </section>
+  );
+}
+
+const ROW_STYLES =
+  'group grid grid-cols-[5rem_1fr_auto] items-center gap-5 py-6 md:grid-cols-[7rem_1.2fr_1.5fr_auto] md:gap-10';
+
+/** A bookable barber links to the booking page; an inactive one is shown, dimmed, without a link. */
+function RowShell({
+  memberId,
+  name,
+  bookable,
+  children,
+}: {
+  memberId: string;
+  name: string;
+  bookable: boolean;
+  children: ReactNode;
+}) {
+  if (!bookable) {
+    return <div className={`${ROW_STYLES} opacity-50`}>{children}</div>;
+  }
+  return (
+    <Link
+      href={`/booking?staff=${memberId}`}
+      aria-label={`رزرو نوبت با ${name}`}
+      className={ROW_STYLES}
+    >
+      {children}
+    </Link>
   );
 }

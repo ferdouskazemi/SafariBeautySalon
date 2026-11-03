@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, Key, PencilSimple, Plus, Star, UserCircle } from '@phosphor-icons/react';
+import { Clock, Key, PencilSimple, Plus, Star, UserCircle, Users } from '@phosphor-icons/react';
 import { ROLE_LABELS, type StaffDto } from '@safari/shared';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
@@ -12,12 +12,15 @@ import { Button } from '@/shared/ui/button';
 import { Badge, EmptyState, Skeleton } from '@/shared/ui/feedback';
 import { PageHeader } from '../../shell/admin-shell';
 import { staffListQuery } from '../api';
+import { CustomersDialog } from './customers-dialog';
 import { PasswordDialog } from './password-dialog';
 import { StaffFormDialog } from './staff-form-dialog';
 import { WorkingHoursDialog } from './working-hours-dialog';
 
 type DialogState =
-  { kind: 'create' } | { kind: 'edit' | 'hours' | 'password'; member: StaffDto } | null;
+  | { kind: 'create' }
+  | { kind: 'edit' | 'hours' | 'password' | 'customers'; member: StaffDto }
+  | null;
 
 export function StaffPage() {
   const { data, isPending, isError, error } = useQuery(staffListQuery);
@@ -94,7 +97,18 @@ export function StaffPage() {
                   </p>
                 </div>
               </div>
-              <div className="mt-4 flex gap-1 border-t border-line pt-3">
+              <div className="mt-4 flex flex-wrap gap-1 border-t border-line pt-3">
+                {member.role === 'STAFF' && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="w-full"
+                    onClick={() => setDialog({ kind: 'customers', member })}
+                  >
+                    <Users size={16} />
+                    مشتری‌ها و نوبت‌ها
+                  </Button>
+                )}
                 <Button
                   size="sm"
                   variant="ghost"
@@ -135,6 +149,7 @@ export function StaffPage() {
         member={dialog?.kind === 'edit' ? dialog.member : undefined}
         onClose={close}
       />
+      {dialog?.kind === 'customers' && <CustomersDialog member={dialog.member} onClose={close} />}
       {dialog?.kind === 'hours' && <WorkingHoursDialog member={dialog.member} onClose={close} />}
       {dialog?.kind === 'password' && <PasswordDialog member={dialog.member} onClose={close} />}
     </>

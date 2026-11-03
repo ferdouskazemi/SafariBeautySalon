@@ -13,6 +13,7 @@ import {
   type AppointmentStatus,
   type BookingConfirmationDto,
   type CreateAppointmentData,
+  type HistoryQuery,
   type PublicAppointmentDto,
   type ScheduleQuery,
 } from '@safari/shared';
@@ -34,6 +35,7 @@ import { generateBookingCode } from './booking-code.js';
 const SLOT_TAKEN = 'این زمان دیگر خالی نیست. لطفاً زمان دیگری انتخاب کنید';
 const APPOINTMENT_NOT_FOUND = 'نوبتی با این کد و شماره موبایل پیدا نشد';
 const MAX_CODE_ATTEMPTS = 3;
+const HISTORY_LIMIT = 200;
 
 @Injectable()
 export class BookingService {
@@ -120,6 +122,17 @@ export class BookingService {
       },
       include: appointmentInclude,
       orderBy: { startsAt: 'asc' },
+    });
+    return appointments.map(toAppointmentDto);
+  }
+
+  /** Latest appointments of one barber across all days, newest first (managers pick the barber). */
+  async history(user: AuthUser, query: HistoryQuery): Promise<AppointmentDto[]> {
+    const appointments = await this.prisma.appointment.findMany({
+      where: { staffId: user.role === 'STAFF' ? user.id : query.staffId },
+      include: appointmentInclude,
+      orderBy: { startsAt: 'desc' },
+      take: HISTORY_LIMIT,
     });
     return appointments.map(toAppointmentDto);
   }

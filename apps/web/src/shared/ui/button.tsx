@@ -2,12 +2,15 @@ import Link from 'next/link';
 import type { ComponentProps } from 'react';
 import { cn } from '@/shared/lib/cn';
 
+// Fading a gold button turns it into dark text on a dark brown fill, so a disabled primary
+// button gets its own readable grey look instead of the shared opacity.
 const variants = {
-  primary: 'bg-accent text-on-accent hover:bg-accent-hover',
+  primary:
+    'bg-accent text-on-accent hover:bg-accent-hover disabled:bg-raised disabled:text-muted disabled:ring-1 disabled:ring-line-strong',
   secondary:
-    'border border-line-strong bg-fg/[0.03] text-fg hover:border-accent/60 hover:bg-fg/[0.06]',
-  ghost: 'text-muted hover:bg-fg/[0.06] hover:text-fg',
-  danger: 'border border-danger/40 text-danger hover:bg-danger/10',
+    'border border-line-strong bg-fg/[0.03] text-fg hover:border-accent/60 hover:bg-fg/[0.06] disabled:opacity-50',
+  ghost: 'text-muted hover:bg-fg/[0.06] hover:text-fg disabled:opacity-50',
+  danger: 'border border-danger/40 text-danger hover:bg-danger/10 disabled:opacity-50',
 } as const;
 
 const sizes = {
@@ -26,7 +29,7 @@ export function buttonStyles({ variant = 'primary', size = 'md' }: ButtonStylePr
   return cn(
     'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium',
     'transition duration-200 ease-out-expo active:scale-[0.98]',
-    'disabled:pointer-events-none disabled:opacity-50',
+    'disabled:pointer-events-none',
     variants[variant],
     sizes[size],
   );

@@ -35,48 +35,50 @@ async function seedManager() {
 
 async function seedTeam() {
   const passwordHash = await argon2.hash('Barber-2026');
+  // The real team. Titles and bios stay empty until the manager writes them in the admin panel.
+  // The last barber is listed on the site but cannot be booked until the manager activates them.
+  const days = [
+    ...SAT_TO_THU.map((weekday) => ({ weekday, ...hours(9, 20) })),
+    { weekday: 5, ...hours(14, 20) },
+  ];
   const team = [
     {
-      fullName: 'نوید رحیمی',
+      fullName: 'جواد صفری',
       phone: '0790000001',
-      title: 'استاد فید و تیپر',
-      bio: 'فیدهای تمیز و فرم‌دهی موهای پرپشت، با دقت روی خط گردن و شقیقه.',
       avatarUrl: '/photos/barber-1.jpg',
-      days: [
-        ...SAT_TO_THU.map((weekday) => ({ weekday, ...hours(9, 20) })),
-        { weekday: 5, ...hours(14, 20) },
-      ],
+      isActive: true,
     },
     {
-      fullName: 'فرهاد سلطانی',
+      fullName: 'محمد حسین صفری',
       phone: '0790000002',
-      title: 'متخصص طراحی ریش',
-      bio: 'ریش را متناسب با فرم صورت طراحی می‌کند، از ته‌ریش مرتب تا باکس کوتاه.',
       avatarUrl: '/photos/barber-2.jpg',
-      days: SAT_TO_THU.map((weekday) => ({ weekday, ...hours(10, 20) })),
+      isActive: true,
     },
     {
-      fullName: 'جاوید کریمی',
+      fullName: 'امیر حسین',
       phone: '0790000003',
-      title: 'اصلاح کلاسیک و رنگ',
-      bio: 'اصلاح کلاسیک با تیغ و حوله داغ، و پوشش طبیعی موهای سفید.',
       avatarUrl: '/photos/barber-3.jpg',
-      days: SAT_TO_THU.map((weekday) => ({ weekday, ...hours(9, 18) })),
+      isActive: true,
     },
+    { fullName: 'محمد جواد صفری', phone: '0790000004', avatarUrl: null, isActive: false },
   ];
 
   const staff = [];
-  for (const { days, ...member } of team) {
+  for (const member of team) {
+    const profile = { ...member, title: 'آرایشگر', bio: null };
+    const { isActive, ...rest } = profile;
     staff.push(
       await prisma.user.upsert({
         where: { phone: member.phone },
-        update: {},
-        create: { ...member, passwordHash, workingHours: { create: days } },
+        // Re-running the seed also renames barbers created by an earlier version of it, but
+        // never flips isActive, so a barber the manager activated stays active.
+        update: rest,
+        create: { ...profile, isActive, passwordHash, workingHours: { create: days } },
       }),
     );
   }
-  console.log('Barber logins: 0790000001..3 / Barber-2026');
-  return staff;
+  console.log('Barber logins: 0790000001..4 / Barber-2026 (the 4th is inactive)');
+  return staff.filter((member) => member.isActive);
 }
 
 async function seedCatalog() {

@@ -14,6 +14,13 @@ export const scheduleQuery = (date: DateKey, staffId?: string) =>
     refetchInterval: 60_000,
   });
 
+/** Every customer a barber has had (latest 200 appointments), for the staff page. */
+export const staffHistoryQuery = (staffId: string) =>
+  queryOptions({
+    queryKey: ['schedule', 'history', staffId],
+    queryFn: () => http<AppointmentDto[]>(`/schedule/history?staffId=${staffId}`),
+  });
+
 export const useUpdateAppointmentStatus = () =>
   useAdminMutation({
     mutationFn: ({ id, status }: { id: string; status: AppointmentStatus }) =>

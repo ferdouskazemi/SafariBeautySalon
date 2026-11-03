@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  BellRinging,
   BellSimple,
   CalendarCheck,
   CalendarX,
@@ -11,9 +12,11 @@ import {
 import { toDateKey, type NotificationDto, type NotificationType } from '@safari/shared';
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { cn } from '@/shared/lib/cn';
 import { formatLongDate, formatTime } from '@/shared/lib/format';
 import { errorMessage } from '@/shared/lib/http';
+import { useHydrated } from '@/shared/lib/use-hydrated';
 import { Button } from '@/shared/ui/button';
 import { EmptyState, Skeleton } from '@/shared/ui/feedback';
 import { PageHeader } from '../../shell/admin-shell';
@@ -61,6 +64,8 @@ export function NotificationsPage() {
           ) : undefined
         }
       />
+
+      <EnableSystemAlerts />
 
       {isPending ? (
         <div className="grid gap-2">
@@ -116,5 +121,29 @@ export function NotificationsPage() {
         </ul>
       )}
     </>
+  );
+}
+
+/** Asks once for permission to show phone/desktop notifications while the panel is in the background. */
+function EnableSystemAlerts() {
+  const hydrated = useHydrated();
+  // The permission lives in the browser; this state only re-renders after the user answers.
+  const [, setAnswered] = useState(false);
+  const permission = hydrated && 'Notification' in window ? Notification.permission : null;
+  if (permission !== 'default') return null;
+
+  return (
+    <div className="mb-4 flex items-center gap-3 rounded-[var(--radius-field)] border border-accent/30 bg-accent-soft p-4">
+      <BellRinging size={22} className="shrink-0 text-accent" />
+      <p className="flex-1 text-sm">
+        اجازه دهید وقتی نوبت جدید ثبت شد، حتی با پنل در پس‌زمینه، اعلان روی همین دستگاه بیاید.
+      </p>
+      <Button
+        size="sm"
+        onClick={() => void Notification.requestPermission().then(() => setAnswered(true))}
+      >
+        فعال‌سازی
+      </Button>
+    </div>
   );
 }
