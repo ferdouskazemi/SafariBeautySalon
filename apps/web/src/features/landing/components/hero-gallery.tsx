@@ -15,13 +15,12 @@ import { cn } from '@/shared/lib/cn';
 
 /*
  * Three photos layered like a shop window under a desert arch.
- * Entrance (once): the arch line draws itself, the main photo is wiped in from the bottom
+ * Entrance (once, CSS only so it runs before hydration): the arch line draws itself, the main photo is wiped in from the bottom
  * while it settles from a zoom, then the two smaller frames come into focus one after another.
  * Afterwards each layer drifts by its own depth with the mouse and with scroll.
  * Reduced motion: MotionConfig (reducedMotion="user") drops the transforms and depth drift is off.
  */
 
-const easeOutExpo = [0.16, 1, 0.3, 1] as const;
 const pointerSpring = { stiffness: 60, damping: 20, mass: 0.6 };
 /** Scroll distance (px) over which the layers reach their full drift. */
 const SCROLL_RANGE = 800;
@@ -107,38 +106,23 @@ export function HeroGallery({ className }: { className?: string }) {
                   <stop offset="100%" stopColor="var(--color-accent)" stopOpacity="0" />
                 </linearGradient>
               </defs>
-              <motion.path
+              <path
                 d="M1 400V150A149 149 0 0 1 299 150V400"
+                pathLength={1}
+                strokeDasharray={1}
                 fill="none"
                 stroke={`url(#${gradientId})`}
                 strokeWidth="1.2"
-                initial={{ pathLength: 0, opacity: 0 }}
-                animate={{ pathLength: 1, opacity: 1 }}
-                transition={{ duration: 2.2, delay: 0.3, ease: easeOutExpo }}
+                className="animate-arch-draw"
               />
             </svg>
-            <motion.div
-              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-accent"
-              initial={{ opacity: 0, scale: 0.4, rotate: -90 }}
-              animate={{ opacity: 1, scale: 1, rotate: 0 }}
-              transition={{ type: 'spring', duration: 1, bounce: 0.3, delay: 1.3 }}
-            >
-              <Keystone className="size-5 drop-shadow-[0_0_10px_rgb(214_179_112/0.6)]" />
-            </motion.div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-accent">
+              <Keystone className="size-5 animate-keystone-pop drop-shadow-[0_0_10px_rgb(214_179_112/0.6)]" />
+            </div>
           </div>
 
-          <motion.div
-            className="absolute inset-0 overflow-hidden rounded-t-[50%_37.5%] rounded-b-[var(--radius-surface)] border border-line-strong"
-            initial={{ clipPath: 'inset(100% 0% 0% 0%)' }}
-            animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
-            transition={{ duration: 1.5, delay: 0.15, ease: easeOutExpo }}
-          >
-            <motion.div
-              className="absolute inset-0"
-              initial={{ scale: 1.35 }}
-              animate={{ scale: 1.04 }}
-              transition={{ duration: 2.4, delay: 0.15, ease: easeOutExpo }}
-            >
+          <div className="absolute inset-0 animate-photo-wipe overflow-hidden rounded-t-[50%_37.5%] rounded-b-[var(--radius-surface)] border border-line-strong">
+            <div className="absolute inset-0 scale-[1.04] animate-photo-settle">
               <Image
                 src={photos.hero}
                 alt="نیم‌رخ مردی با فید تمیز و ریش فرم‌داده‌شده"
@@ -148,24 +132,20 @@ export function HeroGallery({ className }: { className?: string }) {
                 sizes="(min-width: 1024px) 34vw, 75vw"
                 className="object-cover"
               />
-            </motion.div>
+            </div>
             {/* Warm duotone so any photo sits inside the palette. */}
             <div aria-hidden className="absolute inset-0 bg-accent opacity-25 mix-blend-multiply" />
             <div
               aria-hidden
               className="absolute inset-0 bg-gradient-to-t from-bg/70 via-transparent to-transparent"
             />
-          </motion.div>
+          </div>
         </div>
       </DepthLayer>
 
       {/* The craft: scissors at work, tilted like a print pinned to the wall. */}
       <DepthLayer input={input} depth={24} drift={90} className="absolute bottom-0 left-0 w-[44%]">
-        <motion.div
-          initial={{ opacity: 0, y: 56, filter: 'blur(12px)' }}
-          animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-          transition={{ type: 'spring', duration: 1.2, bounce: 0, delay: 0.8 }}
-        >
+        <div className="animate-frame-focus">
           <div className="relative aspect-[3/4] -rotate-[5deg] overflow-hidden rounded-[var(--radius-surface)] border border-line-strong shadow-2xl shadow-black/60 transition-[rotate,scale] duration-700 ease-out-expo hover:scale-[1.03] hover:rotate-0">
             <Image
               src={photos.heroCraft}
@@ -179,7 +159,7 @@ export function HeroGallery({ className }: { className?: string }) {
               فرم‌دهی ریش
             </span>
           </div>
-        </motion.div>
+        </div>
       </DepthLayer>
 
       {/* The tools: a round window on the arch's shoulder. */}
@@ -189,11 +169,7 @@ export function HeroGallery({ className }: { className?: string }) {
         drift={140}
         className="absolute top-[12%] -right-[3%] w-[32%]"
       >
-        <motion.div
-          initial={{ opacity: 0, scale: 0.85, filter: 'blur(12px)' }}
-          animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
-          transition={{ type: 'spring', duration: 1.2, bounce: 0, delay: 1 }}
-        >
+        <div className="animate-orb-focus">
           <div className="relative aspect-square overflow-hidden rounded-full border border-accent/40 shadow-2xl ring-8 shadow-black/60 ring-bg">
             <Image
               src={photos.heroTools}
@@ -203,7 +179,7 @@ export function HeroGallery({ className }: { className?: string }) {
               className="object-cover"
             />
           </div>
-        </motion.div>
+        </div>
       </DepthLayer>
     </div>
   );

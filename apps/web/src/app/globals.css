@@ -32,6 +32,61 @@
 
   --animate-marquee: marquee 40s linear infinite;
 
+  /*
+   * Hero entrance. Pure CSS so it starts on first paint: on a weak connection the headline and
+   * photo are visible before any JavaScript has arrived, instead of waiting to be hydrated.
+   */
+  --animate-word-rise: word-rise 0.9s var(--ease-out-expo) backwards;
+  --animate-photo-wipe: photo-wipe 1.5s var(--ease-out-expo) 0.15s backwards;
+  --animate-photo-settle: photo-settle 2.4s var(--ease-out-expo) 0.15s backwards;
+  --animate-arch-draw: arch-draw 2.2s var(--ease-out-expo) 0.3s backwards;
+  --animate-keystone-pop: keystone-pop 1s cubic-bezier(0.34, 1.4, 0.64, 1) 1.3s backwards;
+  --animate-frame-focus: frame-focus 1.2s var(--ease-out-expo) 0.8s backwards;
+  --animate-orb-focus: orb-focus 1.2s var(--ease-out-expo) 1s backwards;
+
+  @keyframes word-rise {
+    from {
+      transform: translateY(110%);
+    }
+  }
+  @keyframes photo-wipe {
+    from {
+      clip-path: inset(100% 0 0 0);
+    }
+  }
+  @keyframes photo-settle {
+    from {
+      scale: 1.35;
+    }
+  }
+  @keyframes arch-draw {
+    from {
+      stroke-dashoffset: 1;
+      opacity: 0;
+    }
+  }
+  @keyframes keystone-pop {
+    from {
+      opacity: 0;
+      scale: 0.4;
+      rotate: -90deg;
+    }
+  }
+  @keyframes frame-focus {
+    from {
+      opacity: 0;
+      translate: 0 56px;
+      filter: blur(12px);
+    }
+  }
+  @keyframes orb-focus {
+    from {
+      opacity: 0;
+      scale: 0.85;
+      filter: blur(12px);
+    }
+  }
+
   @keyframes marquee {
     from {
       transform: translateX(0);

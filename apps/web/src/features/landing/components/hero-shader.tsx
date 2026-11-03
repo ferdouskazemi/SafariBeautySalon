@@ -107,6 +107,14 @@ export function HeroShader({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    // Data Saver, a slow link or a very low-memory phone: keep the CSS gradient and spare the GPU.
+    const { connection, deviceMemory } = navigator as Navigator & {
+      connection?: { saveData?: boolean; effectiveType?: string };
+      deviceMemory?: number;
+    };
+    if (connection?.saveData || (connection?.effectiveType ?? '4g') !== '4g') return;
+    if (deviceMemory !== undefined && deviceMemory <= 2) return;
+
     const canvas = canvasRef.current;
     const gl = canvas?.getContext('webgl2', {
       antialias: false,
