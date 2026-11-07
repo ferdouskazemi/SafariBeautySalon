@@ -13,7 +13,7 @@ export function Hero() {
       {/* Fallback backdrop while (or if) WebGL is not available. */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-20 bg-[radial-gradient(60%_50%_at_25%_45%,rgb(214_179_112/0.14),transparent_70%),radial-gradient(40%_40%_at_80%_90%,rgb(214_179_112/0.06),transparent_70%)]"
+        className="absolute inset-0 -z-20 bg-[radial-gradient(60%_50%_at_25%_45%,color-mix(in_srgb,var(--color-accent)_14%,transparent),transparent_70%),radial-gradient(40%_40%_at_80%_90%,color-mix(in_srgb,var(--color-accent)_6%,transparent),transparent_70%)]"
       />
       <HeroShader className="absolute inset-0 -z-10 size-full" />
 

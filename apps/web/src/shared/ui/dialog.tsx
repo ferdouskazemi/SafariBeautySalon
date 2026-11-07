@@ -31,7 +31,7 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
       aria-label={title}
       className={cn(
         'm-auto w-[min(100%-2rem,32rem)] rounded-[var(--radius-surface)] border border-line-strong bg-surface p-0 text-fg',
-        'backdrop:bg-black/70 backdrop:backdrop-blur-sm',
+        'backdrop:bg-black/60 backdrop:backdrop-blur-sm',
         className,
       )}
     >

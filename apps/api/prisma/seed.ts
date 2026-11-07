@@ -5,7 +5,7 @@
  */
 import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { salonTimeToInstant, toDateKey } from '@safari/shared';
+import { SERVICE_COLOR_COUNT, salonTimeToInstant, toDateKey } from '@safari/shared';
 import * as argon2 from 'argon2';
 import { PrismaClient, type ServiceCategory } from '../src/generated/prisma/client.js';
 
@@ -148,7 +148,9 @@ async function seedCatalog() {
       description: 'شستشو، ماساژ سر و حالت‌دهی با محصول مناسب.',
     },
   ];
-  await prisma.service.createMany({ data: services });
+  await prisma.service.createMany({
+    data: services.map((service, i) => ({ ...service, colorIndex: i % SERVICE_COLOR_COUNT })),
+  });
   const created = await prisma.service.findMany();
   const id = (name: string) => created.find((s) => s.name === name)!.id;
 

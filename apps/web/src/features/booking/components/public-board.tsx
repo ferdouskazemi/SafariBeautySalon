@@ -65,7 +65,7 @@ export function PublicBoard() {
         <ul className="hidden flex-wrap gap-4 text-xs text-muted md:flex" aria-label="راهنما">
           <LegendItem className={FREE_STYLE}>آزاد؛ برای رزرو بزنید</LegendItem>
           <LegendItem className={BOOKED_STYLE}>رزرو شده</LegendItem>
-          <LegendItem className="border border-line-strong bg-[repeating-linear-gradient(135deg,transparent_0_3px,rgb(236_230_218/0.15)_3px_6px)]">
+          <LegendItem className="border border-line-strong bg-[repeating-linear-gradient(135deg,transparent_0_3px,color-mix(in_srgb,var(--color-fg)_15%,transparent)_3px_6px)]">
             خارج از ساعت کاری
           </LegendItem>
         </ul>

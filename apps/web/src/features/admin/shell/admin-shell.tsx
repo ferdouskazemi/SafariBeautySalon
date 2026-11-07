@@ -21,6 +21,7 @@ import { cn } from '@/shared/lib/cn';
 import { Skeleton } from '@/shared/ui/feedback';
 import { formatNumber } from '@/shared/lib/format';
 import { LogoMark } from '@/shared/ui/logo';
+import { ThemeToggle } from '@/shared/ui/theme-toggle';
 import { useNotificationAlerts } from '../notifications/use-notification-alerts';
 
 interface NavItem {
@@ -111,16 +112,19 @@ export function AdminShell({ children }: { children: ReactNode }) {
             ) : (
               <Skeleton className="h-9 w-28" />
             )}
-            <button
-              type="button"
-              onClick={onLogout}
-              aria-label="خروج"
-              title="خروج"
-              className="grid size-10 place-items-center rounded-full text-muted transition-colors hover:bg-danger/10 hover:text-danger lg:mt-3 lg:flex lg:size-auto lg:gap-2 lg:px-0 lg:text-sm lg:hover:bg-transparent"
-            >
-              <SignOut size={20} />
-              <span className="hidden lg:inline">خروج</span>
-            </button>
+            <div className="flex items-center gap-2 lg:mt-3 lg:gap-4">
+              <ThemeToggle />
+              <button
+                type="button"
+                onClick={onLogout}
+                aria-label="خروج"
+                title="خروج"
+                className="grid size-10 place-items-center rounded-full text-muted transition-colors hover:bg-danger/10 hover:text-danger lg:flex lg:size-auto lg:gap-2 lg:px-0 lg:text-sm lg:hover:bg-transparent"
+              >
+                <SignOut size={20} />
+                <span className="hidden lg:inline">خروج</span>
+              </button>
+            </div>
           </div>
         </div>
 

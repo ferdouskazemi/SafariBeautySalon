@@ -1,9 +1,14 @@
 @import 'tailwindcss';
 
+/* `dark:` follows the site's own theme switch, not the OS setting. */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
 /*
  * Safari Beauty Salon design tokens: "Desert Futurism".
  * Black-and-gold palette on a near-black olive base, with one gold accent taken from the logo.
- * The brand is dark by design (a night-time desert), so the theme is locked to dark.
+ * Dark is the brand's home (a night-time desert); the light theme is the same palette turned into
+ * warm sand and ink. Both live in tokens: the values below are dark, and `:root[data-theme='light']`
+ * further down overrides them, so components never need to know which theme is active.
  *
  * Shape rule: interactive controls are full pills, inputs are 14px, surfaces are 24px.
  */
@@ -111,6 +116,52 @@
   --z-header: 40;
   --z-overlay: 50;
   color-scheme: dark;
+
+  /* The hero's contour lines (read by the WebGL shader). */
+  --hero-line: #d6b370;
+
+  /*
+   * One color per service in the schedule (SERVICE_COLOR_COUNT in @safari/shared).
+   * Eight clearly different hues; none is the gold used for the brand accent.
+   */
+  --svc-0: #5fb0e8;
+  --svc-1: #ee7f9a;
+  --svc-2: #5cc48c;
+  --svc-3: #a58cf0;
+  --svc-4: #ef7f5e;
+  --svc-5: #4cc7c4;
+  --svc-6: #b5d65a;
+  --svc-7: #d97ae0;
+}
+
+/* Light theme: warm sand surfaces, ink text, and a deeper gold that stays readable on white. */
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --color-bg: #f6f2ea;
+  --color-surface: #fffdf8;
+  --color-raised: #ebe5d8;
+  --color-line: rgb(28 26 21 / 0.1);
+  --color-line-strong: rgb(28 26 21 / 0.2);
+  --color-fg: #1c1a15;
+  --color-muted: #675f51;
+  --color-accent: #8c6416;
+  --color-accent-hover: #765312;
+  --color-accent-soft: rgb(140 100 22 / 0.11);
+  --color-on-accent: #fffaf0;
+  --color-danger: #b53d28;
+  --color-success: #2b7447;
+
+  --hero-line: #a47a22;
+
+  --svc-0: #1f78b8;
+  --svc-1: #c2335c;
+  --svc-2: #1e8352;
+  --svc-3: #6747cc;
+  --svc-4: #c0431d;
+  --svc-5: #12827a;
+  --svc-6: #5b840c;
+  --svc-7: #a236ab;
 }
 
 @layer base {
@@ -135,6 +186,31 @@
   /* Phone numbers, codes and other Latin runs stay left-to-right inside RTL text. */
   [dir='ltr'] {
     unicode-bidi: isolate;
+  }
+}
+
+@layer components {
+  /*
+   * A booking in the schedule, tinted with its service's color (set `--svc`, and `--svc-stripe`
+   * when it has several services). The solid stripe on the start edge is what you spot from afar.
+   */
+  .svc-block {
+    position: relative;
+    padding-inline-start: 0.875rem;
+    border: 1px solid color-mix(in oklab, var(--svc) 40%, transparent);
+    background: color-mix(in oklab, var(--svc) 24%, var(--color-surface));
+    color: var(--color-fg);
+  }
+  .svc-block::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 0.375rem;
+    background: var(--svc-stripe, var(--svc));
+  }
+  :root[data-theme='light'] .svc-block {
+    background: color-mix(in oklab, var(--svc) 16%, var(--color-surface));
   }
 }
 

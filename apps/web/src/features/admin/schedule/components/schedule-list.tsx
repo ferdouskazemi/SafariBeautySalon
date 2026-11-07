@@ -23,6 +23,7 @@ import { Button, buttonStyles } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
 import { Badge, EmptyState, Skeleton } from '@/shared/ui/feedback';
 import { scheduleQuery, useUpdateAppointmentStatus } from '../api';
+import { OfferingChips } from '../offering-colors';
 
 const STATUS_TONES = {
   CONFIRMED: 'accent',
@@ -104,7 +105,7 @@ function AppointmentRow({
             <p className="font-bold">{appointment.customerName}</p>
             <Badge tone={STATUS_TONES[status]}>{APPOINTMENT_STATUS_LABELS[status]}</Badge>
           </div>
-          <p className="mt-1 text-sm">{appointment.offering.name}</p>
+          <OfferingChips offering={appointment.offering} />
           <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
             {showStaff && <span>آرایشگر: {appointment.staff.fullName}</span>}
             <span>{formatPrice(appointment.price)}</span>

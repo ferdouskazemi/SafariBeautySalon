@@ -48,7 +48,7 @@ export function Sheet({ open, onClose, title, children, className }: SheetProps)
       className={cn(
         'm-0 mt-auto max-h-none w-full max-w-none border-0 bg-transparent p-0 text-fg',
         'md:m-auto md:w-[min(100%-2rem,30rem)]',
-        'backdrop:bg-black/70 backdrop:backdrop-blur-sm',
+        'backdrop:bg-black/60 backdrop:backdrop-blur-sm',
         className,
       )}
     >

@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type {
-  CatalogDto,
-  CreatePackageData,
-  CreateServiceData,
-  OfferingRef,
-  PackageDto,
-  ServiceDto,
-  UpdatePackageData,
-  UpdateServiceData,
+import {
+  SERVICE_COLOR_COUNT,
+  type CatalogDto,
+  type CreatePackageData,
+  type CreateServiceData,
+  type OfferingRef,
+  type PackageDto,
+  type ServiceDto,
+  type UpdatePackageData,
+  type UpdateServiceData,
 } from '@safari/shared';
 import type { Prisma, Service } from '../../generated/prisma/client.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -87,7 +88,9 @@ export class CatalogService {
   }
 
   async createService(data: CreateServiceData): Promise<ServiceDto> {
-    return toServiceDto(await this.prisma.service.create({ data }));
+    const used = await this.prisma.service.findMany({ select: { colorIndex: true } });
+    const colorIndex = leastUsedColor(used.map((service) => service.colorIndex));
+    return toServiceDto(await this.prisma.service.create({ data: { ...data, colorIndex } }));
   }
 
   async updateService(id: string, data: UpdateServiceData): Promise<ServiceDto> {
@@ -125,6 +128,13 @@ export class CatalogService {
   }
 }
 
+/** The schedule color shared by the fewest services, so a new service stands out from the rest. */
+export function leastUsedColor(used: number[]): number {
+  const counts = Array.from({ length: SERVICE_COLOR_COUNT }, () => 0);
+  for (const index of used) if (counts[index] !== undefined) counts[index]++;
+  return counts.indexOf(Math.min(...counts));
+}
+
 /** "اصلاح مو + طراحی ریش" */
 export function joinServiceNames(names: string[]): string {
   return names.join(' + ');
@@ -135,6 +145,7 @@ function toServiceDto(service: Service): ServiceDto {
     id: service.id,
     name: service.name,
     description: service.description,
+    colorIndex: service.colorIndex,
     category: service.category,
     durationMinutes: service.durationMinutes,
     price: service.price,

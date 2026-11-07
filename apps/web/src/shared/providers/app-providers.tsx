@@ -5,6 +5,7 @@ import { MotionConfig } from 'motion/react';
 import { useState } from 'react';
 import { Toaster } from 'sonner';
 import { ApiError } from '@/shared/lib/http';
+import { useTheme } from '@/shared/lib/theme';
 
 function createQueryClient() {
   return new QueryClient({
@@ -22,6 +23,7 @@ function createQueryClient() {
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(createQueryClient);
+  const theme = useTheme();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -29,7 +31,7 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
       <Toaster
         dir="rtl"
         position="top-center"
-        theme="dark"
+        theme={theme}
         toastOptions={{
           className:
             '!bg-raised !text-fg !border-line-strong !font-sans !rounded-[var(--radius-field)]',

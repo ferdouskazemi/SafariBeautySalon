@@ -8,6 +8,7 @@ import {
   type AppointmentStatus,
   type DateKey,
 } from '@safari/shared';
+import { Check } from '@phosphor-icons/react';
 import { useQuery } from '@tanstack/react-query';
 import { formatTime } from '@/shared/lib/format';
 import { errorMessage } from '@/shared/lib/http';
@@ -15,11 +16,13 @@ import { EmptyState, Skeleton } from '@/shared/ui/feedback';
 import { TimelineGrid } from '@/shared/ui/timeline-grid';
 import { staffListQuery } from '../../staff/api';
 import { scheduleQuery } from '../api';
+import { offeringStyle, ServiceLegend } from '../offering-colors';
 
+/** The color says which service; the status shows as a check (done) or struck-through text. */
 const STATUS_BLOCK: Record<Exclude<AppointmentStatus, 'CANCELLED'>, string> = {
-  CONFIRMED: 'border border-accent/50 bg-accent-soft text-fg',
-  COMPLETED: 'border border-success/40 bg-success/10 text-fg',
-  NO_SHOW: 'border border-line-strong bg-raised text-muted line-through',
+  CONFIRMED: 'svc-block',
+  COMPLETED: 'svc-block',
+  NO_SHOW: 'svc-block opacity-60 line-through',
 };
 
 interface ScheduleGridProps {
@@ -59,10 +62,21 @@ export function ScheduleGrid({ date, staffId }: ScheduleGridProps) {
         startMinute: minuteOfDayOf(new Date(a.startsAt)),
         endMinute: minuteOfDayOf(new Date(a.endsAt)) || 24 * 60,
         className: STATUS_BLOCK[a.status as keyof typeof STATUS_BLOCK],
+        style: offeringStyle(a.offering),
         title: `${a.customerName} (${a.customerPhone})، ${a.offering.name}، ${APPOINTMENT_STATUS_LABELS[a.status]}`,
         children: (
           <>
-            <span className="block truncate font-bold">{a.customerName}</span>
+            <span className="flex items-center gap-1 font-bold">
+              <span className="truncate">{a.customerName}</span>
+              {a.status === 'COMPLETED' && (
+                <Check
+                  size={14}
+                  weight="bold"
+                  className="shrink-0 text-success"
+                  aria-label={APPOINTMENT_STATUS_LABELS.COMPLETED}
+                />
+              )}
+            </span>
             <span className="block truncate text-muted">{a.offering.name}</span>
             <span className="block text-muted">
               {formatTime(a.startsAt)} تا {formatTime(a.endsAt)}
@@ -72,12 +86,18 @@ export function ScheduleGrid({ date, staffId }: ScheduleGridProps) {
       })),
   }));
 
-  const grid = columns.length > 0 && (
-    <TimelineGrid
-      label="تقویم روز"
-      nowMinute={date === toDateKey(new Date()) ? minuteOfDayOf(new Date()) : null}
-      columns={columns}
-    />
+  if (columns.length === 0) {
+    return <EmptyState title="در این روز هیچ آرایشگری برنامه ندارد" />;
+  }
+  const booked = schedule.data.filter((a) => a.status !== 'CANCELLED');
+  return (
+    <div className="flex flex-col gap-3">
+      <ServiceLegend offerings={booked.map((a) => a.offering)} />
+      <TimelineGrid
+        label="تقویم روز"
+        nowMinute={date === toDateKey(new Date()) ? minuteOfDayOf(new Date()) : null}
+        columns={columns}
+      />
+    </div>
   );
-  return grid || <EmptyState title="در این روز هیچ آرایشگری برنامه ندارد" />;
 }

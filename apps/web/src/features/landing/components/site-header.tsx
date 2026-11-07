@@ -3,6 +3,7 @@ import { siteConfig, siteNav } from '@/shared/config/site';
 import { ButtonLink } from '@/shared/ui/button';
 import { Container } from '@/shared/ui/container';
 import { LogoMark } from '@/shared/ui/logo';
+import { ThemeToggle } from '@/shared/ui/theme-toggle';
 import { MobileNav } from './mobile-nav';
 
 export function SiteHeader() {
@@ -50,6 +51,7 @@ export function SiteHeader() {
           >
             پیگیری نوبت
           </Link>
+          <ThemeToggle />
           <ButtonLink href="/booking" size="sm">
             رزرو نوبت
           </ButtonLink>

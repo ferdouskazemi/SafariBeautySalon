@@ -117,7 +117,7 @@ export function HeroGallery({ className }: { className?: string }) {
               />
             </svg>
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-accent">
-              <Keystone className="size-5 animate-keystone-pop drop-shadow-[0_0_10px_rgb(214_179_112/0.6)]" />
+              <Keystone className="size-5 animate-keystone-pop drop-shadow-[0_0_10px_color-mix(in_srgb,var(--color-accent)_60%,transparent)]" />
             </div>
           </div>
 
@@ -146,7 +146,7 @@ export function HeroGallery({ className }: { className?: string }) {
       {/* The craft: scissors at work, tilted like a print pinned to the wall. */}
       <DepthLayer input={input} depth={24} drift={90} className="absolute bottom-0 left-0 w-[44%]">
         <div className="animate-frame-focus">
-          <div className="relative aspect-[3/4] -rotate-[5deg] overflow-hidden rounded-[var(--radius-surface)] border border-line-strong shadow-2xl shadow-black/60 transition-[rotate,scale] duration-700 ease-out-expo hover:scale-[1.03] hover:rotate-0">
+          <div className="relative aspect-[3/4] -rotate-[5deg] overflow-hidden rounded-[var(--radius-surface)] border border-line-strong shadow-2xl shadow-black/20 transition-[rotate,scale] duration-700 ease-out-expo hover:scale-[1.03] hover:rotate-0 dark:shadow-black/60">
             <Image
               src={photos.heroCraft}
               alt="آرایشگر در حال فرم‌دادن موی کنار ریش با قیچی"
@@ -170,7 +170,7 @@ export function HeroGallery({ className }: { className?: string }) {
         className="absolute top-[12%] -right-[3%] w-[32%]"
       >
         <div className="animate-orb-focus">
-          <div className="relative aspect-square overflow-hidden rounded-full border border-accent/40 shadow-2xl ring-8 shadow-black/60 ring-bg">
+          <div className="relative aspect-square overflow-hidden rounded-full border border-accent/40 shadow-2xl ring-8 shadow-black/20 ring-bg dark:shadow-black/60">
             <Image
               src={photos.heroTools}
               alt="ماشین اصلاح طلایی و شانه‌ها روی میز آرایشگر"

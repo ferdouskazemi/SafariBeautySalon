@@ -1,7 +1,7 @@
 import type {
   AppointmentDto,
+  AppointmentOfferingDto,
   BookingConfirmationDto,
-  OfferingRef,
   PublicAppointmentDto,
 } from '@safari/shared';
 import type { Prisma } from '../../generated/prisma/client.js';
@@ -10,18 +10,21 @@ import { joinServiceNames } from '../catalog/catalog.service.js';
 /** What an appointment needs loaded to name its package or services. */
 export const offeringSelect = {
   package: { select: { name: true } },
-  services: { select: { service: { select: { name: true } } }, orderBy: { position: 'asc' } },
+  services: {
+    select: { service: { select: { name: true, colorIndex: true } } },
+    orderBy: { position: 'asc' },
+  },
 } satisfies Prisma.AppointmentSelect;
 
 type WithOffering = Prisma.AppointmentGetPayload<{ select: typeof offeringSelect }>;
 
-export function offeringOf(appointment: WithOffering): OfferingRef {
-  return appointment.package
-    ? { kind: 'package', name: appointment.package.name }
-    : {
-        kind: 'services',
-        name: joinServiceNames(appointment.services.map((item) => item.service.name)),
-      };
+export function offeringOf(appointment: WithOffering): AppointmentOfferingDto {
+  if (appointment.package) return { kind: 'package', name: appointment.package.name, parts: [] };
+  const parts = appointment.services.map(({ service }) => ({
+    name: service.name,
+    colorIndex: service.colorIndex,
+  }));
+  return { kind: 'services', name: joinServiceNames(parts.map((part) => part.name)), parts };
 }
 
 export const appointmentInclude = {

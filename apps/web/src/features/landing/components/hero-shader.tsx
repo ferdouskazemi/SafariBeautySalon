@@ -19,10 +19,10 @@ precision highp float;
 uniform vec2 uResolution;
 uniform float uTime;
 uniform vec2 uPointer;
+// Page background and line color, read from the theme so both themes share one shader.
+uniform vec3 uBg;
+uniform vec3 uLine;
 out vec4 fragColor;
-
-const vec3 BG = vec3(0.051, 0.055, 0.047);
-const vec3 LINE = vec3(0.839, 0.702, 0.439);
 
 vec2 hash(vec2 p) {
   p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
@@ -71,8 +71,15 @@ void main() {
   float bottomFade = smoothstep(0.0, 0.3, gl_FragCoord.y / uResolution.y);
 
   float intensity = line * (0.16 + 0.22 * major + 0.6 * glow) * side * bottomFade;
-  fragColor = vec4(mix(BG, LINE, intensity), 1.0);
+  fragColor = vec4(mix(uBg, uLine, intensity), 1.0);
 }`;
+
+/** A theme color token such as `#0d0e0c`, as the 0-1 RGB a shader wants. */
+function themeColor(token: string): [number, number, number] {
+  const hex = getComputedStyle(document.documentElement).getPropertyValue(token).trim();
+  const value = Number.parseInt(hex.slice(1), 16);
+  return [(value >> 16) / 255, ((value >> 8) & 255) / 255, (value & 255) / 255];
+}
 
 const TARGET_FPS = 30;
 const RESOLUTION_SCALE = 0.6;
@@ -137,6 +144,12 @@ export function HeroShader({ className }: { className?: string }) {
     const uResolution = gl.getUniformLocation(program, 'uResolution');
     const uTime = gl.getUniformLocation(program, 'uTime');
     const uPointer = gl.getUniformLocation(program, 'uPointer');
+    const uBg = gl.getUniformLocation(program, 'uBg');
+    const uLine = gl.getUniformLocation(program, 'uLine');
+    const applyTheme = () => {
+      gl.uniform3f(uBg, ...themeColor('--color-bg'));
+      gl.uniform3f(uLine, ...themeColor('--hero-line'));
+    };
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const startedAt = performance.now();
@@ -197,6 +210,17 @@ export function HeroShader({ className }: { className?: string }) {
       if (!running) draw(performance.now());
     });
 
+    // A theme switch repaints the still frame at once (a running loop picks it up by itself).
+    const themeObserver = new MutationObserver(() => {
+      applyTheme();
+      if (!running) draw(performance.now());
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    applyTheme();
     resize();
     draw(performance.now());
     canvas.dataset.ready = 'true';
@@ -209,6 +233,7 @@ export function HeroShader({ className }: { className?: string }) {
       pause();
       intersection.disconnect();
       resizer.disconnect();
+      themeObserver.disconnect();
       document.removeEventListener('visibilitychange', sync);
       window.removeEventListener('pointermove', onPointerMove);
       gl.deleteBuffer(buffer);

@@ -9,7 +9,7 @@ const remAt = (minutes: number) => `${(minutes / 60) * REM_PER_HOUR}rem`;
 /** Diagonal stripes for hours a barber does not work. */
 const OFF_HOURS: CSSProperties = {
   backgroundImage:
-    'repeating-linear-gradient(135deg, transparent 0 6px, rgb(236 230 218 / 0.05) 6px 12px)',
+    'repeating-linear-gradient(135deg, transparent 0 6px, color-mix(in srgb, var(--color-fg) 5%, transparent) 6px 12px)',
 };
 
 export interface TimelineBlock {
@@ -18,6 +18,8 @@ export interface TimelineBlock {
   startMinute: number;
   endMinute: number;
   className: string;
+  /** Extra inline styles, e.g. CSS variables a block's class reads. */
+  style?: CSSProperties;
   children: ReactNode;
   href?: string;
   title?: string;
@@ -111,6 +113,7 @@ export function TimelineGrid({ columns, nowMinute, label }: TimelineGridProps) {
 
             {column.blocks.map((block) => {
               const style = {
+                ...block.style,
                 top: remAt(block.startMinute - start),
                 height: remAt(block.endMinute - block.startMinute),
               };

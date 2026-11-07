@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Unbounded, Vazirmatn } from 'next/font/google';
 import { siteConfig } from '@/shared/config/site';
+import { THEME_SCRIPT } from '@/shared/lib/theme-script';
 import { AppProviders } from '@/shared/providers/app-providers';
 import './globals.css';
 
@@ -32,13 +33,26 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#0d0e0c',
-  colorScheme: 'dark',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#f6f2ea' },
+    { media: '(prefers-color-scheme: dark)', color: '#0d0e0c' },
+  ],
+  colorScheme: 'dark light',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="fa-AF" dir="rtl" className={`${vazirmatn.variable} ${unbounded.variable}`}>
+    // The theme script sets `data-theme` before React hydrates, hence suppressHydrationWarning.
+    <html
+      lang="fa-AF"
+      dir="rtl"
+      data-theme="dark"
+      suppressHydrationWarning
+      className={`${vazirmatn.variable} ${unbounded.variable}`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-dvh">
         <AppProviders>{children}</AppProviders>
       </body>

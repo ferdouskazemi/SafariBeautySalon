@@ -16,6 +16,12 @@ export const ROLE_LABELS: Record<Role, string> = {
   STAFF: 'آرایشگر',
 };
 
+/**
+ * How many distinct colors services cycle through in the schedule. The web app defines the matching
+ * `--svc-0` ... `--svc-7` CSS variables; each service stores the index it was given.
+ */
+export const SERVICE_COLOR_COUNT = 8;
+
 export const SERVICE_CATEGORIES = ['HAIR', 'BEARD', 'FACE', 'GROOMING'] as const;
 export type ServiceCategory = (typeof SERVICE_CATEGORIES)[number];
 

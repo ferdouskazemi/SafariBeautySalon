@@ -80,6 +80,8 @@ model Service {
   durationMinutes Int
   /// Afghani (AFN), whole units.
   price           Int
+  /// Index into the schedule's service colors, spread out when the service is created.
+  colorIndex      Int             @default(0)
   isActive        Boolean         @default(true)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt

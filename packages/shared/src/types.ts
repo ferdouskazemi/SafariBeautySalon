@@ -12,6 +12,8 @@ export interface SessionUser {
 export interface ServiceDto {
   id: string;
   name: string;
+  /** Which of the SERVICE_COLOR_COUNT schedule colors this service uses. */
+  colorIndex: number;
   description: string | null;
   category: ServiceCategory;
   durationMinutes: number;
@@ -82,6 +84,11 @@ export interface OfferingRef {
   name: string;
 }
 
+/** An appointment's offering, with each service and its schedule color (empty for a package). */
+export interface AppointmentOfferingDto extends OfferingRef {
+  parts: { name: string; colorIndex: number }[];
+}
+
 export interface AppointmentDto {
   id: string;
   code: string;
@@ -92,7 +99,7 @@ export interface AppointmentDto {
   status: AppointmentStatus;
   price: number;
   note: string | null;
-  offering: OfferingRef;
+  offering: AppointmentOfferingDto;
   staff: { id: string; fullName: string };
 }
 
