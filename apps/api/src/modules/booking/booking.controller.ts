@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Post, Req } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import {
@@ -18,9 +18,11 @@ import {
   type CreateAppointmentData,
   type PublicAppointmentDto,
 } from '@safari/shared';
+import type { Request } from 'express';
 import { ZodBody, ZodQuery } from '../../common/validation/zod-validation.js';
 import { AvailabilityService } from './availability.service.js';
 import { BookingService } from './booking.service.js';
+import { TurnstileService } from './turnstile.service.js';
 
 /** Public, guest-facing booking endpoints. */
 @ApiTags('booking')
@@ -29,6 +31,7 @@ export class BookingController {
   constructor(
     private readonly booking: BookingService,
     private readonly availability: AvailabilityService,
+    private readonly turnstile: TurnstileService,
   ) {}
 
   @Get('availability')
@@ -52,9 +55,11 @@ export class BookingController {
 
   @Post('appointments')
   @Throttle({ default: { limit: 5, ttl: 60_000 } })
-  create(
-    @ZodBody(createAppointmentSchema) body: CreateAppointmentData,
+  async create(
+    @ZodBody(createAppointmentSchema) { turnstileToken, ...body }: CreateAppointmentData,
+    @Req() req: Request,
   ): Promise<BookingConfirmationDto> {
+    await this.turnstile.verify(turnstileToken, req.ip);
     return this.booking.create(body);
   }
 

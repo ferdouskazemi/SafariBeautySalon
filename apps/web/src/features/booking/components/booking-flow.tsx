@@ -105,12 +105,13 @@ export function BookingFlow({ catalog, team }: BookingFlowProps) {
   const items = cartItems(catalog, state);
   const staffName = (id: string | null | undefined) => team.find((m) => m.id === id)?.fullName;
 
-  const submit = (details: BookingDetails) => {
+  const submit = (details: BookingDetails, turnstileToken?: string) => {
     const { offering, slot, staffId } = state;
     if (!offering || !slot) return;
     createAppointment.mutate(
       {
         ...details,
+        turnstileToken,
         ...offeringFields(offering),
         // "Any barber" lets the server pick whoever is still free at that time.
         staffId: staffId ?? undefined,

@@ -9,6 +9,8 @@ const envSchema = z.object({
   WEB_ORIGIN: z.url(),
   COOKIE_SECURE: z.stringbool().default(false),
   TRUST_PROXY_HOPS: z.coerce.number().int().min(0).default(1),
+  /** Cloudflare Turnstile secret. When unset, bookings are not challenged (local development). */
+  TURNSTILE_SECRET_KEY: z.string().min(1).optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;

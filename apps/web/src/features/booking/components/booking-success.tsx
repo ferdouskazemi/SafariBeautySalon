@@ -1,11 +1,22 @@
 'use client';
 
-import { CheckCircle, Copy } from '@phosphor-icons/react';
+import { CheckCircle, Copy, WhatsappLogo } from '@phosphor-icons/react';
 import type { BookingConfirmationDto } from '@safari/shared';
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
+import { salonWhatsAppUrl } from '@/shared/config/site';
 import { formatLongDate, formatPrice, formatTime } from '@/shared/lib/format';
-import { ButtonLink } from '@/shared/ui/button';
+import { buttonStyles, ButtonLink } from '@/shared/ui/button';
+
+/** The message the customer sends to the salon's WhatsApp; the salon sees it from their real number. */
+function confirmationMessage(c: BookingConfirmationDto) {
+  return [
+    'سلام، نوبتم را تأیید می‌کنم.',
+    `کد نوبت: ${c.code}`,
+    `${c.offeringName} با ${c.staffName}`,
+    `${formatLongDate(c.startsAt)}، ساعت ${formatTime(c.startsAt)}`,
+  ].join('\n');
+}
 
 export function BookingSuccess({ confirmation }: { confirmation: BookingConfirmationDto }) {
   const copyCode = async () => {
@@ -57,6 +68,21 @@ export function BookingSuccess({ confirmation }: { confirmation: BookingConfirma
         مبلغ: <span className="font-bold">{formatPrice(confirmation.price)}</span>
         <span className="text-muted"> (پرداخت در سالون)</span>
       </p>
+
+      <div className="mt-6 rounded-[var(--radius-field)] border border-line-strong p-4">
+        <a
+          href={salonWhatsAppUrl(confirmationMessage(confirmation))}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={buttonStyles({ variant: 'secondary' })}
+        >
+          <WhatsappLogo size={20} weight="fill" className="text-success" />
+          تأیید نوبت در واتساپ
+        </a>
+        <p className="mt-3 text-xs text-muted">
+          اختیاری: با یک پیام کوتاه، سالون مطمئن می‌شود شماره از خودتان است.
+        </p>
+      </div>
 
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <ButtonLink href={`/track?code=${confirmation.code}`}>پیگیری نوبت</ButtonLink>

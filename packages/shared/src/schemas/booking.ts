@@ -52,6 +52,8 @@ export const createAppointmentSchema = z
     customerName: personNameSchema,
     customerPhone: phoneSchema,
     note: optionalTextSchema(300),
+    /** Cloudflare Turnstile token; required by the API only when Turnstile is configured. */
+    turnstileToken: z.string().max(2048).optional(),
   })
   .refine(hasExactlyOneOffering, offeringError);
 export type CreateAppointmentInput = z.input<typeof createAppointmentSchema>;

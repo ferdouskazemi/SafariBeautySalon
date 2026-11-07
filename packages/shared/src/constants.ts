@@ -7,6 +7,11 @@ export const SLOT_STEP_MINUTES = 30;
 export const BOOKING_WINDOW_DAYS = 21;
 export const MIN_BOOKING_LEAD_MINUTES = 30;
 export const MAX_SERVICES_PER_BOOKING = 6;
+/** Upcoming confirmed bookings one phone number may hold at once (stops fake bulk booking). */
+export const MAX_ACTIVE_BOOKINGS_PER_PHONE = 2;
+/** After this many no-shows inside the window, online booking asks the customer to call instead. */
+export const NO_SHOW_LIMIT = 2;
+export const NO_SHOW_WINDOW_DAYS = 180;
 
 export const ROLES = ['ADMIN', 'STAFF'] as const;
 export type Role = (typeof ROLES)[number];

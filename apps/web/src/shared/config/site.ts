@@ -17,6 +17,13 @@ export const siteConfig = {
   ],
 } as const;
 
+/** A wa.me link that opens WhatsApp to the salon with `text` already typed. */
+export function salonWhatsAppUrl(text: string): string {
+  // Local 07XXXXXXXX -> international 937XXXXXXXX, which wa.me requires.
+  const international = `93${siteConfig.phone.slice(1)}`;
+  return `https://wa.me/${international}?text=${encodeURIComponent(text)}`;
+}
+
 export const siteNav = [
   { href: '/#packages', label: 'پکیج‌ها' },
   { href: '/#services', label: 'خدمات' },

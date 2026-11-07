@@ -146,6 +146,7 @@ model Appointment {
 
   @@index([staffId, startsAt])
   @@index([startsAt])
+  @@index([customerPhone, status])
   @@map("appointments")
 }
 

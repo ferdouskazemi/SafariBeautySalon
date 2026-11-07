@@ -10,6 +10,7 @@ import { formatDuration, formatLongDate, formatPrice, formatTime } from '@/share
 import { Button } from '@/shared/ui/button';
 import { Field, Input, Textarea } from '@/shared/ui/field';
 import { Sheet } from '@/shared/ui/sheet';
+import { Turnstile, turnstileEnabled } from '@/shared/ui/turnstile';
 import type { CartItem } from './booking-summary';
 
 const detailsSchema = z.object({
@@ -51,7 +52,7 @@ interface ConfirmSheetProps {
   submitting: boolean;
   /** A failure to show inside the sheet (toasts sit behind the open sheet). */
   error: string | null;
-  onSubmit: (details: BookingDetails) => void;
+  onSubmit: (details: BookingDetails, turnstileToken?: string) => void;
 }
 
 /** Opens as soon as a time is tapped: check the details, enter name and phone, book. */
@@ -76,6 +77,9 @@ function ConfirmContent({
   const [saved] = useState(readSavedContact);
   const [editingContact, setEditingContact] = useState(saved === null);
   const [showNote, setShowNote] = useState(false);
+  // The bot check's one-time token; a new one is requested after every attempt.
+  const [token, setToken] = useState<string | null>(null);
+  const [attempts, setAttempts] = useState(0);
   const form = useForm<DetailsInput, unknown, BookingDetails>({
     resolver: zodResolver(detailsSchema),
     defaultValues: {
@@ -122,7 +126,9 @@ function ConfirmContent({
         noValidate
         onSubmit={form.handleSubmit((details) => {
           saveContact(details);
-          onSubmit(details);
+          onSubmit(details, token ?? undefined);
+          setToken(null);
+          setAttempts((n) => n + 1);
         })}
         className="flex flex-col gap-4"
       >
@@ -199,6 +205,8 @@ function ConfirmContent({
           </button>
         )}
 
+        <Turnstile onToken={setToken} resetKey={attempts} />
+
         {error && (
           <p
             role="alert"
@@ -212,7 +220,13 @@ function ConfirmContent({
           <span className="text-sm text-muted">جمع · پرداخت در سالون</span>
           <span className="text-xl font-black text-accent">{formatPrice(total)}</span>
         </div>
-        <Button type="submit" size="lg" loading={submitting} className="w-full">
+        <Button
+          type="submit"
+          size="lg"
+          loading={submitting}
+          disabled={turnstileEnabled && !token}
+          className="w-full"
+        >
           ثبت نوبت
         </Button>
         <Button variant="ghost" onClick={onClose} className="-mt-2 w-full">

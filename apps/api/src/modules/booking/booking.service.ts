@@ -2,10 +2,12 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  HttpException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import {
+  NO_SHOW_WINDOW_DAYS,
   salonTimeToInstant,
   toDateKey,
   type AppointmentDto,
@@ -31,6 +33,7 @@ import {
 } from './appointment.mapper.js';
 import { AvailabilityService } from './availability.service.js';
 import { generateBookingCode } from './booking-code.js';
+import { bookingBlock } from './booking-limits.js';
 
 const SLOT_TAKEN = 'این زمان دیگر خالی نیست. لطفاً زمان دیگری انتخاب کنید';
 const APPOINTMENT_NOT_FOUND = 'نوبتی با این کد و شماره موبایل پیدا نشد';
@@ -47,6 +50,7 @@ export class BookingService {
   ) {}
 
   async create(data: CreateAppointmentData): Promise<BookingConfirmationDto> {
+    await this.assertPhoneMayBook(data.customerPhone);
     const offering = await this.catalog.resolveOffering(data);
     const startsAt = new Date(data.startsAt);
 
@@ -78,6 +82,22 @@ export class BookingService {
     });
     await this.notifications.notifyTeam('APPOINTMENT_BOOKED', appointment);
     return toConfirmationDto(appointment);
+  }
+
+  /** Stops one phone number from hoarding slots, and asks repeat no-shows to call the salon. */
+  private async assertPhoneMayBook(customerPhone: string): Promise<void> {
+    const now = new Date();
+    const windowStart = new Date(now.getTime() - NO_SHOW_WINDOW_DAYS * 24 * 60 * 60_000);
+    const [activeCount, noShowCount] = await Promise.all([
+      this.prisma.appointment.count({
+        where: { customerPhone, status: 'CONFIRMED', startsAt: { gt: now } },
+      }),
+      this.prisma.appointment.count({
+        where: { customerPhone, status: 'NO_SHOW', startsAt: { gte: windowStart } },
+      }),
+    ]);
+    const block = bookingBlock({ activeCount, noShowCount });
+    if (block) throw new HttpException(block.message, block.status);
   }
 
   async lookup(data: AppointmentLookupData): Promise<PublicAppointmentDto> {
