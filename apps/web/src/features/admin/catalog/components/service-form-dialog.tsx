@@ -36,7 +36,6 @@ export function ServiceFormDialog({ open, service, onClose }: ServiceFormDialogP
       description: service?.description ?? '',
       category: service?.category ?? 'HAIR',
       durationMinutes: service?.durationMinutes ?? 30,
-      price: service?.price ?? 0,
       isActive: service?.isActive ?? true,
     });
   }, [open, service, form]);
@@ -72,18 +71,6 @@ export function ServiceFormDialog({ open, service, onClose }: ServiceFormDialogP
                 step={5}
                 dir="ltr"
                 {...form.register('durationMinutes', { valueAsNumber: true })}
-              />
-            )}
-          </Field>
-          <Field label="قیمت (افغانی)" error={errors.price?.message}>
-            {(c) => (
-              <Input
-                {...c}
-                type="number"
-                min={0}
-                step={10}
-                dir="ltr"
-                {...form.register('price', { valueAsNumber: true })}
               />
             )}
           </Field>

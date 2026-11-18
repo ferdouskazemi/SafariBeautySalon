@@ -5,7 +5,7 @@ import { SERVICE_CATEGORY_LABELS, type PackageDto, type ServiceDto } from '@safa
 import { useQuery } from '@tanstack/react-query';
 import { useState, type ReactNode } from 'react';
 import { cn } from '@/shared/lib/cn';
-import { formatDuration, formatNumber, formatPrice } from '@/shared/lib/format';
+import { formatDuration, formatNumber } from '@/shared/lib/format';
 import { errorMessage } from '@/shared/lib/http';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
@@ -62,7 +62,6 @@ export function CatalogPage() {
             key={pkg.id}
             title={pkg.name}
             meta={[
-              formatPrice(pkg.price),
               formatDuration(pkg.durationMinutes),
               `${formatNumber(pkg.services.length)} خدمت`,
             ]}
@@ -92,7 +91,6 @@ export function CatalogPage() {
             title={service.name}
             meta={[
               SERVICE_CATEGORY_LABELS[service.category],
-              formatPrice(service.price),
               formatDuration(service.durationMinutes),
             ]}
             badges={!service.isActive && <Badge tone="danger">پنهان</Badge>}

@@ -88,63 +88,54 @@ async function seedCatalog() {
     name: string;
     category: ServiceCategory;
     durationMinutes: number;
-    price: number;
     description: string;
   }[] = [
     {
       name: 'اصلاح موی کلاسیک',
       category: 'HAIR',
       durationMinutes: 40,
-      price: 400,
       description: 'کوتاهی با قیچی و ماشین، متناسب با فرم سر.',
     },
     {
       name: 'فید مدرن',
       category: 'HAIR',
       durationMinutes: 50,
-      price: 500,
       description: 'لو، مید یا های فید با انتقال نرم و خط‌کشی دقیق.',
     },
     {
       name: 'رنگ و پوشش موی سفید',
       category: 'HAIR',
       durationMinutes: 45,
-      price: 800,
       description: 'پوشش طبیعی، بدون حالت رنگ‌شده.',
     },
     {
       name: 'طراحی و فرم‌دهی ریش',
       category: 'BEARD',
       durationMinutes: 30,
-      price: 300,
       description: 'فرم‌دهی ریش بر اساس فرم فک و گونه.',
     },
     {
       name: 'اصلاح صورت با حوله داغ',
       category: 'BEARD',
       durationMinutes: 30,
-      price: 350,
       description: 'تیغ، حوله داغ و روغن مراقبت.',
     },
     {
       name: 'فیشال ذغال',
       category: 'FACE',
       durationMinutes: 40,
-      price: 700,
       description: 'پاکسازی عمیق منافذ و کنترل چربی پوست.',
     },
     {
       name: 'ماسک و آبرسانی پوست',
       category: 'FACE',
       durationMinutes: 30,
-      price: 500,
       description: 'ماسک آرام‌بخش برای پوست خسته و خشک.',
     },
     {
       name: 'شستشو و حالت‌دهی',
       category: 'GROOMING',
       durationMinutes: 20,
-      price: 200,
       description: 'شستشو، ماساژ سر و حالت‌دهی با محصول مناسب.',
     },
   ];
@@ -157,28 +148,24 @@ async function seedCatalog() {
   const packages = [
     {
       name: 'کلاسیک',
-      price: 550,
       isFeatured: false,
       description: 'اصلاح مو، شستشو و حالت‌دهی برای هر هفته.',
       items: ['اصلاح موی کلاسیک', 'شستشو و حالت‌دهی'],
     },
     {
       name: 'معمار ریش',
-      price: 600,
       isFeatured: false,
       description: 'برای کسانی که ریش، امضای چهره‌شان است.',
       items: ['طراحی و فرم‌دهی ریش', 'اصلاح صورت با حوله داغ'],
     },
     {
       name: 'اکسپدیشن سفری',
-      price: 1600,
       isFeatured: true,
       description: 'تجربه کامل سالون: فید، ریش، حوله داغ و فیشال ذغال.',
       items: ['فید مدرن', 'طراحی و فرم‌دهی ریش', 'اصلاح صورت با حوله داغ', 'فیشال ذغال'],
     },
     {
       name: 'داماد',
-      price: 2500,
       isFeatured: false,
       description: 'آماده‌سازی کامل برای روز عروسی، با مراقبت پوست و حالت‌دهی نهایی.',
       items: [
@@ -201,7 +188,7 @@ async function seedCatalog() {
 
 async function seedSampleVisits(
   staffIds: string[],
-  services: { id: string; durationMinutes: number; price: number }[],
+  services: { id: string; durationMinutes: number }[],
 ) {
   if ((await prisma.appointment.count()) > 0) return;
 
@@ -248,10 +235,9 @@ async function seedSampleVisits(
         customerName: visit.customer,
         customerPhone: `07990000${String(i + 10).padStart(2, '0')}`,
         staffId: staffIds[i % staffIds.length]!,
-        services: { create: { serviceId: service.id, price: service.price, position: 0 } },
+        services: { create: { serviceId: service.id, position: 0 } },
         startsAt,
         endsAt: new Date(startsAt.getTime() + service.durationMinutes * 60_000),
-        price: service.price,
         status: 'COMPLETED',
         review: { create: { rating: visit.rating, comment: visit.comment } },
       },

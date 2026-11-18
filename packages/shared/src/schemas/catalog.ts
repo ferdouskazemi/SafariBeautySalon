@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { SERVICE_CATEGORIES } from '../constants.js';
-import { idSchema, optionalTextSchema, priceSchema } from './common.js';
+import { idSchema, optionalTextSchema } from './common.js';
 
 const offeringNameSchema = z
   .string()
@@ -17,7 +17,6 @@ export const createServiceSchema = z.object({
     .int()
     .min(10, 'حداقل ۱۰ دقیقه')
     .max(480, 'حداکثر ۸ ساعت'),
-  price: priceSchema,
   isActive: z.boolean().optional(),
 });
 export type CreateServiceInput = z.input<typeof createServiceSchema>;
@@ -29,7 +28,6 @@ export type UpdateServiceData = z.output<typeof updateServiceSchema>;
 export const createPackageSchema = z.object({
   name: offeringNameSchema,
   description: optionalTextSchema(400),
-  price: priceSchema,
   serviceIds: z.array(idSchema).min(1, 'حداقل یک خدمت انتخاب کنید').max(12),
   isFeatured: z.boolean().optional(),
   isActive: z.boolean().optional(),

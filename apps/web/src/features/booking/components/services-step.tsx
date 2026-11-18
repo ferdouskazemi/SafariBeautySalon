@@ -9,6 +9,7 @@ import {
 } from '@safari/shared';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { cn } from '@/shared/lib/cn';
+import { STARTING_PRICE_AFN } from '@/shared/config/site';
 import { formatDuration, formatNumber, formatPrice } from '@/shared/lib/format';
 import type { OfferingSelection } from '../api';
 
@@ -53,6 +54,7 @@ export function ServicesStep({
 
   return (
     <div>
+      <p className="mb-1 text-sm text-muted">شروع قیمت‌ها از {formatPrice(STARTING_PRICE_AFN)}</p>
       <nav
         aria-label="دسته‌بندی خدمات"
         className="sticky top-16 z-10 -mx-4 mb-6 flex [scrollbar-width:none] gap-2 overflow-x-auto bg-bg/90 px-4 py-3 backdrop-blur-xl md:mx-0 md:px-0"
@@ -83,11 +85,7 @@ export function ServicesStep({
 
       <div ref={listRef} className="flex flex-col gap-10">
         {catalog.packages.length > 0 && (
-          <MenuSection
-            id="packages"
-            title="پکیج‌ها"
-            hint="پکیج با تخفیف است و جای خدمات تکی را در سبد می‌گیرد."
-          >
+          <MenuSection id="packages" title="پکیج‌ها" hint="پکیج جای خدمات تکی را در سبد می‌گیرد.">
             {catalog.packages.map((pkg) => (
               <MenuItem
                 key={pkg.id}
@@ -95,8 +93,6 @@ export function ServicesStep({
                 badge={pkg.isFeatured ? 'پیشنهاد ویژه' : undefined}
                 detail={pkg.services.map((s) => s.name).join('، ')}
                 durationMinutes={pkg.durationMinutes}
-                price={pkg.price}
-                regularPrice={pkg.regularPrice > pkg.price ? pkg.regularPrice : undefined}
                 selected={value?.kind === 'package' && value.id === pkg.id}
                 onToggle={() => onTogglePackage(pkg.id)}
               />
@@ -121,7 +117,6 @@ export function ServicesStep({
                     name={service.name}
                     detail={service.description}
                     durationMinutes={service.durationMinutes}
-                    price={service.price}
                     selected={selected}
                     disabled={!selected && atMax}
                     onToggle={() => onToggleService(service.id)}
@@ -169,8 +164,6 @@ interface MenuItemProps {
   badge?: string;
   detail?: string | null;
   durationMinutes: number;
-  price: number;
-  regularPrice?: number;
   selected: boolean;
   disabled?: boolean;
   onToggle: () => void;
@@ -181,8 +174,6 @@ function MenuItem({
   badge,
   detail,
   durationMinutes,
-  price,
-  regularPrice,
   selected,
   disabled,
   onToggle,
@@ -209,11 +200,7 @@ function MenuItem({
           )}
         </span>
         <span className="mt-1 flex flex-wrap items-baseline gap-x-2 text-sm">
-          <span className="font-bold">{formatPrice(price)}</span>
-          {regularPrice && (
-            <span className="text-xs text-muted line-through">{formatPrice(regularPrice)}</span>
-          )}
-          <span className="whitespace-nowrap text-muted">· {formatDuration(durationMinutes)}</span>
+          <span className="whitespace-nowrap text-muted">{formatDuration(durationMinutes)}</span>
         </span>
         {detail && <span className="mt-1.5 line-clamp-2 block text-sm text-muted">{detail}</span>}
       </span>

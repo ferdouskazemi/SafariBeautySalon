@@ -4,7 +4,7 @@ import {
   ArrowLeft,
   CalendarCheck,
   CalendarDots,
-  Coins,
+  CheckCircle,
   Star,
   type Icon,
 } from '@phosphor-icons/react';
@@ -12,7 +12,7 @@ import { toDateKey, type DashboardStatsDto } from '@safari/shared';
 import { queryOptions, useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { cn } from '@/shared/lib/cn';
-import { formatNumber, formatPrice, formatRating } from '@/shared/lib/format';
+import { formatNumber, formatRating } from '@/shared/lib/format';
 import { http } from '@/shared/lib/http';
 import { Skeleton } from '@/shared/ui/feedback';
 import { ScheduleList } from '../../schedule/components/schedule-list';
@@ -48,7 +48,11 @@ export function DashboardPage() {
       icon: CalendarDots,
       href: '/admin/schedule',
     },
-    { label: 'درآمد ۳۰ روز اخیر', value: data && formatPrice(data.revenueLast30Days), icon: Coins },
+    {
+      label: 'نوبت‌های انجام‌شده (۳۰ روز)',
+      value: data && formatNumber(data.completedLast30Days),
+      icon: CheckCircle,
+    },
     {
       label: `امتیاز (${data ? formatNumber(data.rating.count) : '-'} نظر)`,
       value: data && (data.rating.average === null ? '-' : formatRating(data.rating.average)),

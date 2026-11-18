@@ -90,3 +90,16 @@ export const updateAppointmentStatusSchema = z.object({
   status: z.enum(APPOINTMENT_STATUSES),
 });
 export type UpdateAppointmentStatusData = z.output<typeof updateAppointmentStatusSchema>;
+
+/** Shortest an appointment can be made; it can only be shortened, never extended. */
+export const MIN_APPOINTMENT_MINUTES = 10;
+
+/** The manager cuts an appointment short, which frees the rest of the time for new bookings. */
+export const updateAppointmentDurationSchema = z.object({
+  durationMinutes: z
+    .number({ error: 'مدت زمان را وارد کنید' })
+    .int('مدت زمان باید عدد صحیح باشد')
+    .min(MIN_APPOINTMENT_MINUTES, `حداقل ${MIN_APPOINTMENT_MINUTES} دقیقه`)
+    .max(480, 'حداکثر ۸ ساعت'),
+});
+export type UpdateAppointmentDurationData = z.output<typeof updateAppointmentDurationSchema>;

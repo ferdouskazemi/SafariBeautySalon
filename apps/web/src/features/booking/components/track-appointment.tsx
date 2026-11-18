@@ -14,7 +14,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { ReviewForm } from '@/features/reviews/components/review-form';
-import { formatLongDate, formatPrice, formatTime } from '@/shared/lib/format';
+import { formatDuration, formatLongDate, formatTime } from '@/shared/lib/format';
 import { errorMessage } from '@/shared/lib/http';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
@@ -143,8 +143,14 @@ function AppointmentCard({ appointment, credentials, onChange }: AppointmentCard
           </dd>
         </div>
         <div>
-          <dt className="text-muted">مبلغ</dt>
-          <dd className="mt-1 font-bold">{formatPrice(appointment.price)}</dd>
+          <dt className="text-muted">مدت زمان</dt>
+          <dd className="mt-1 font-bold">
+            {formatDuration(
+              Math.round(
+                (Date.parse(appointment.endsAt) - Date.parse(appointment.startsAt)) / 60_000,
+              ),
+            )}
+          </dd>
         </div>
       </dl>
 

@@ -17,6 +17,9 @@ export const siteConfig = {
   ],
 } as const;
 
+/** Prices are not listed on the site; customers only see where they start (whole Afghani). */
+export const STARTING_PRICE_AFN = 500;
+
 /** A wa.me link that opens WhatsApp to the salon with `text` already typed. */
 export function salonWhatsAppUrl(text: string): string {
   // Local 07XXXXXXXX -> international 937XXXXXXXX, which wa.me requires.

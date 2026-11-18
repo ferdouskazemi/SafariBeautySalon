@@ -22,9 +22,8 @@ type PackageWithServices = Prisma.PackageGetPayload<{ include: typeof packageInc
 export interface ResolvedOffering extends OfferingRef {
   packageId: string | null;
   /** Single services in the order chosen; empty for a package. */
-  services: { id: string; price: number }[];
+  services: { id: string }[];
   durationMinutes: number;
-  price: number;
 }
 
 @Injectable()
@@ -41,7 +40,7 @@ export class CatalogService {
       this.prisma.package.findMany({
         where: activeOnly,
         include: packageInclude,
-        orderBy: [{ isFeatured: 'desc' }, { price: 'asc' }],
+        orderBy: [{ isFeatured: 'desc' }, { createdAt: 'asc' }],
       }),
     ]);
     return { services: services.map(toServiceDto), packages: packages.map(toPackageDto) };
@@ -64,7 +63,6 @@ export class CatalogService {
         packageId: dto.id,
         services: [],
         durationMinutes: dto.durationMinutes,
-        price: dto.price,
       };
     }
 
@@ -81,9 +79,8 @@ export class CatalogService {
       kind: 'services',
       name: joinServiceNames(chosen.map((s) => s.name)),
       packageId: null,
-      services: chosen.map((s) => ({ id: s.id, price: s.price })),
+      services: chosen.map((s) => ({ id: s.id })),
       durationMinutes: chosen.reduce((sum, s) => sum + s.durationMinutes, 0),
-      price: chosen.reduce((sum, s) => sum + s.price, 0),
     };
   }
 
@@ -148,7 +145,6 @@ function toServiceDto(service: Service): ServiceDto {
     colorIndex: service.colorIndex,
     category: service.category,
     durationMinutes: service.durationMinutes,
-    price: service.price,
     isActive: service.isActive,
   };
 }
@@ -159,8 +155,6 @@ function toPackageDto(pkg: PackageWithServices): PackageDto {
     id: pkg.id,
     name: pkg.name,
     description: pkg.description,
-    price: pkg.price,
-    regularPrice: services.reduce((sum, s) => sum + s.price, 0),
     durationMinutes: services.reduce((sum, s) => sum + s.durationMinutes, 0),
     isFeatured: pkg.isFeatured,
     isActive: pkg.isActive,
