@@ -8,13 +8,7 @@ import { useSearchParams } from 'next/navigation';
 import { useCallback, useReducer, useRef, type ReactNode } from 'react';
 import { toast } from 'sonner';
 import { cn } from '@/shared/lib/cn';
-import {
-  formatDuration,
-  formatLongDate,
-  formatNumber,
-  formatPrice,
-  formatTime,
-} from '@/shared/lib/format';
+import { formatDuration, formatLongDate, formatNumber, formatTime } from '@/shared/lib/format';
 import { ApiError, errorMessage } from '@/shared/lib/http';
 import { Button } from '@/shared/ui/button';
 import { offeringFields, useCreateAppointment } from '../api';
@@ -306,7 +300,6 @@ function MobileBar({
   waitingForTime: boolean;
   action: ReactNode;
 }) {
-  const total = items.reduce((sum, item) => sum + item.price, 0);
   const duration = items.reduce((sum, item) => sum + item.durationMinutes, 0);
   return (
     <motion.div
@@ -317,13 +310,13 @@ function MobileBar({
     >
       <div className="mx-auto flex max-w-xl items-center gap-4">
         <div className="min-w-0 flex-1">
-          <p className="font-black text-accent">{formatPrice(total)}</p>
+          <p className="font-black text-accent">{formatDuration(duration)}</p>
           <p className="truncate text-xs text-muted">
             {slot
               ? `${formatLongDate(slot.startsAt)}، ساعت ${formatTime(slot.startsAt)}`
               : waitingForTime
                 ? 'یک ساعت را انتخاب کنید'
-                : `${label} · ${formatDuration(duration)}`}
+                : label}
           </p>
         </div>
         <div className="w-40 shrink-0">{action}</div>

@@ -21,6 +21,18 @@ export const staffHistoryQuery = (staffId: string) =>
     queryFn: () => http<AppointmentDto[]>(`/schedule/history?staffId=${staffId}`),
   });
 
+/** Manager only: cut an appointment short, which frees the rest of its time. */
+export const useShortenAppointment = () =>
+  useAdminMutation({
+    mutationFn: ({ id, durationMinutes }: { id: string; durationMinutes: number }) =>
+      http<AppointmentDto>(`/schedule/${id}/duration`, {
+        method: 'PATCH',
+        body: { durationMinutes },
+      }),
+    invalidates: [['schedule'], ['admin', 'dashboard']],
+    successMessage: 'زمان نوبت کوتاه شد',
+  });
+
 export const useUpdateAppointmentStatus = () =>
   useAdminMutation({
     mutationFn: ({ id, status }: { id: string; status: AppointmentStatus }) =>

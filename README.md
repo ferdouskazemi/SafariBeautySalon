@@ -73,7 +73,7 @@ pnpm dev                                      # web :3000, API :4000
   (`appointments_no_overlap`) makes overlapping bookings for one barber impossible, even under races.
 - **Reviews** are only accepted for completed appointments (one per visit). The manager can hide reviews.
 - **Time zone.** All times are stored in UTC and shown in Asia/Kabul (UTC+04:30, no DST) using the
-  Afghan solar calendar (حمل، ثور، …) and Dari digits. Prices are whole Afghani (AFN).
+  Afghan solar calendar (حمل، ثور، …) and Dari digits. Prices are not shown anywhere; the site only says "prices start from 500 AFN".
 - **Roles.** The manager manages staff, working hours, services/packages and reviews. Barbers log in
   and see and update only their own schedule.
 

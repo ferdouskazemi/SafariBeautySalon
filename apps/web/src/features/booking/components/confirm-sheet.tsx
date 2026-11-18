@@ -6,7 +6,7 @@ import { optionalTextSchema, personNameSchema, phoneSchema, type SlotDto } from 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { formatDuration, formatLongDate, formatPrice, formatTime } from '@/shared/lib/format';
+import { formatDuration, formatLongDate, formatTime } from '@/shared/lib/format';
 import { Button } from '@/shared/ui/button';
 import { Field, Input, Textarea } from '@/shared/ui/field';
 import { Sheet } from '@/shared/ui/sheet';
@@ -92,7 +92,6 @@ function ConfirmContent({
   // A saved contact that fails validation (e.g. edited elsewhere) opens the fields again.
   const contactError = Boolean(errors.customerName || errors.customerPhone);
 
-  const total = items.reduce((sum, item) => sum + item.price, 0);
   const duration = items.reduce((sum, item) => sum + item.durationMinutes, 0);
   const endsAt = new Date(Date.parse(slot.startsAt) + duration * 60_000).toISOString();
 
@@ -217,8 +216,8 @@ function ConfirmContent({
         )}
 
         <div className="flex items-baseline justify-between border-t border-line pt-4">
-          <span className="text-sm text-muted">جمع · پرداخت در سالون</span>
-          <span className="text-xl font-black text-accent">{formatPrice(total)}</span>
+          <span className="text-sm text-muted">مدت زمان · پرداخت در سالون</span>
+          <span className="text-xl font-black text-accent">{formatDuration(duration)}</span>
         </div>
         <Button
           type="submit"

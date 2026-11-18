@@ -9,8 +9,7 @@ import {
   type ServiceDto,
 } from '@safari/shared';
 import { useEffect } from 'react';
-import { useForm, useWatch } from 'react-hook-form';
-import { formatPrice } from '@/shared/lib/format';
+import { useForm } from 'react-hook-form';
 import { Button } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
 import { Checkbox, Field, Input, Textarea } from '@/shared/ui/field';
@@ -29,17 +28,12 @@ export function PackageFormDialog({ open, pkg, services, onClose }: PackageFormD
     resolver: zodResolver(createPackageSchema),
   });
   const { errors } = form.formState;
-  const selectedIds = useWatch({ control: form.control, name: 'serviceIds' }) ?? [];
-  const regularPrice = services
-    .filter((s) => selectedIds.includes(s.id))
-    .reduce((sum, s) => sum + s.price, 0);
 
   useEffect(() => {
     if (!open) return;
     form.reset({
       name: pkg?.name ?? '',
       description: pkg?.description ?? '',
-      price: pkg?.price ?? 0,
       serviceIds: pkg?.services.map((s) => s.id) ?? [],
       isFeatured: pkg?.isFeatured ?? false,
       isActive: pkg?.isActive ?? true,
@@ -74,22 +68,6 @@ export function PackageFormDialog({ open, pkg, services, onClose }: PackageFormD
           )}
         </fieldset>
 
-        <Field
-          label="قیمت پکیج (افغانی)"
-          error={errors.price?.message}
-          hint={regularPrice > 0 ? `جمع قیمت جداگانه: ${formatPrice(regularPrice)}` : undefined}
-        >
-          {(c) => (
-            <Input
-              {...c}
-              type="number"
-              min={0}
-              step={10}
-              dir="ltr"
-              {...form.register('price', { valueAsNumber: true })}
-            />
-          )}
-        </Field>
         <Field label="توضیح کوتاه" error={errors.description?.message}>
           {(c) => <Textarea {...c} {...form.register('description')} />}
         </Field>

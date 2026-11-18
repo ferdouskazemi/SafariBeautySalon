@@ -3,7 +3,7 @@
 import { Phone } from '@phosphor-icons/react';
 import { APPOINTMENT_STATUS_LABELS, type AppointmentStatus, type StaffDto } from '@safari/shared';
 import { useQuery } from '@tanstack/react-query';
-import { formatLongDate, formatNumber, formatPrice, formatTime } from '@/shared/lib/format';
+import { formatLongDate, formatNumber, formatTime } from '@/shared/lib/format';
 import { errorMessage } from '@/shared/lib/http';
 import { Dialog } from '@/shared/ui/dialog';
 import { Badge, EmptyState, Skeleton } from '@/shared/ui/feedback';
@@ -25,7 +25,6 @@ export function CustomersDialog({ member, onClose }: { member: StaffDto; onClose
     (a) => a.status === 'CONFIRMED' && new Date(a.startsAt) > new Date(),
   );
   const customers = new Set(data?.map((a) => a.customerPhone));
-  const income = done.reduce((sum, a) => sum + a.price, 0);
 
   return (
     <Dialog open onClose={onClose} title={`مشتری‌های ${member.fullName}`}>
@@ -45,7 +44,6 @@ export function CustomersDialog({ member, onClose }: { member: StaffDto; onClose
             <Stat label="مشتری" value={formatNumber(customers.size)} />
             <Stat label="نوبت‌های انجام‌شده" value={formatNumber(done.length)} />
             <Stat label="نوبت‌های پیش‌رو" value={formatNumber(upcoming?.length ?? 0)} />
-            <Stat label="درآمد انجام‌شده" value={formatPrice(income)} />
           </dl>
 
           <ul className="grid gap-2">
@@ -63,7 +61,7 @@ export function CustomersDialog({ member, onClose }: { member: StaffDto; onClose
                   </p>
                   <p className="mt-1 text-sm">{a.offering.name}</p>
                   <p className="mt-1 text-xs text-muted">
-                    {formatLongDate(a.startsAt)}، {formatTime(a.startsAt)} · {formatPrice(a.price)}
+                    {formatLongDate(a.startsAt)}، {formatTime(a.startsAt)}
                   </p>
                 </div>
                 <a

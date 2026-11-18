@@ -1,4 +1,6 @@
 import { SERVICE_CATEGORIES } from '@safari/shared';
+import { STARTING_PRICE_AFN } from '@/shared/config/site';
+import { formatPrice } from '@/shared/lib/format';
 import { Container, SectionTitle } from '@/shared/ui/container';
 import { EmptyState } from '@/shared/ui/feedback';
 import { getCatalog } from '../api';
@@ -14,7 +16,10 @@ export async function ServicesSection() {
       <Container className="max-w-5xl">
         <SectionTitle>منوی خدمات</SectionTitle>
         <p className="mt-4 max-w-[52ch] leading-relaxed text-muted">
-          هر خدمت را جداگانه رزرو کنید، یا با یک پکیج کمتر بپردازید.
+          هر خدمت را جداگانه رزرو کنید، یا یک پکیج کامل انتخاب کنید.
+        </p>
+        <p className="mt-3 inline-block rounded-full border border-accent/40 bg-accent-soft px-4 py-1.5 text-sm font-bold text-accent">
+          شروع قیمت‌ها از {formatPrice(STARTING_PRICE_AFN)}
         </p>
         {services.length === 0 ? (
           <EmptyState className="mt-12" title="فهرست خدمات در حال به‌روزرسانی است" />

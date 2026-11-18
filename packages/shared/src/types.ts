@@ -17,7 +17,6 @@ export interface ServiceDto {
   description: string | null;
   category: ServiceCategory;
   durationMinutes: number;
-  price: number;
   isActive: boolean;
 }
 
@@ -25,9 +24,6 @@ export interface PackageDto {
   id: string;
   name: string;
   description: string | null;
-  price: number;
-  /** Sum of the included services' prices, to show the saving. */
-  regularPrice: number;
   durationMinutes: number;
   isFeatured: boolean;
   isActive: boolean;
@@ -97,7 +93,6 @@ export interface AppointmentDto {
   startsAt: string;
   endsAt: string;
   status: AppointmentStatus;
-  price: number;
   note: string | null;
   offering: AppointmentOfferingDto;
   staff: { id: string; fullName: string };
@@ -106,7 +101,6 @@ export interface AppointmentDto {
 export interface BookingConfirmationDto {
   code: string;
   startsAt: string;
-  price: number;
   offeringName: string;
   staffName: string;
 }
@@ -139,7 +133,7 @@ export interface PublicReviewsDto {
 export interface DashboardStatsDto {
   todayAppointments: number;
   upcomingAppointments: number;
-  revenueLast30Days: number;
+  completedLast30Days: number;
   rating: RatingSummary;
 }
 

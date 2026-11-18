@@ -33,6 +33,7 @@ import {
 } from './appointment.mapper.js';
 import { AvailabilityService } from './availability.service.js';
 import { generateBookingCode } from './booking-code.js';
+import { shortenError } from './appointment-duration.js';
 import { bookingBlock } from './booking-limits.js';
 
 const SLOT_TAKEN = 'این زمان دیگر خالی نیست. لطفاً زمان دیگری انتخاب کنید';
@@ -72,13 +73,11 @@ export class BookingService {
       services: {
         create: offering.services.map((service, position) => ({
           serviceId: service.id,
-          price: service.price,
           position,
         })),
       },
       startsAt,
       endsAt: new Date(startsAt.getTime() + offering.durationMinutes * 60_000),
-      price: offering.price,
     });
     await this.notifications.notifyTeam('APPOINTMENT_BOOKED', appointment);
     return toConfirmationDto(appointment);
@@ -183,6 +182,21 @@ export class BookingService {
         throw new ConflictException('این زمان با نوبت دیگری تداخل دارد');
       throw error;
     }
+  }
+
+  /** Cuts an appointment short (e.g. a 1-hour slot that only took 30 minutes), freeing the rest. */
+  async shortenDuration(id: string, durationMinutes: number): Promise<AppointmentDto> {
+    const appointment = await this.prisma.appointment.findUnique({ where: { id } });
+    if (!appointment) throw new NotFoundException('نوبت پیدا نشد');
+    const error = shortenError(appointment, durationMinutes);
+    if (error) throw new BadRequestException(error);
+
+    const updated = await this.prisma.appointment.update({
+      where: { id },
+      data: { endsAt: new Date(appointment.startsAt.getTime() + durationMinutes * 60_000) },
+      include: appointmentInclude,
+    });
+    return toAppointmentDto(updated);
   }
 
   private async insertWithUniqueCode(

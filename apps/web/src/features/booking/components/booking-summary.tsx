@@ -2,13 +2,12 @@ import { CalendarBlank, Clock, MapPin, User } from '@phosphor-icons/react/dist/s
 import type { SlotDto } from '@safari/shared';
 import type { ReactNode } from 'react';
 import { siteConfig } from '@/shared/config/site';
-import { formatDuration, formatLongDate, formatPrice, formatTime } from '@/shared/lib/format';
+import { formatDuration, formatLongDate, formatTime } from '@/shared/lib/format';
 import { LogoMark } from '@/shared/ui/logo';
 
 export interface CartItem {
   id: string;
   name: string;
-  price: number;
   durationMinutes: number;
 }
 
@@ -31,7 +30,6 @@ export function BookingSummary({
   slot,
   action,
 }: BookingSummaryProps) {
-  const total = items.reduce((sum, item) => sum + item.price, 0);
   const duration = items.reduce((sum, item) => sum + item.durationMinutes, 0);
   const endsAt = slot && new Date(Date.parse(slot.startsAt) + duration * 60_000).toISOString();
 
@@ -84,7 +82,6 @@ export function BookingSummary({
                 <span className="block font-medium">{item.name}</span>
                 <span className="text-xs text-muted">{formatDuration(item.durationMinutes)}</span>
               </span>
-              <span className="shrink-0 font-medium">{formatPrice(item.price)}</span>
             </li>
           ))}
         </ul>
@@ -92,15 +89,10 @@ export function BookingSummary({
 
       <div className="flex items-baseline justify-between border-t border-line pt-5">
         <span className="flex items-center gap-1.5 text-muted">
-          جمع
-          {duration > 0 && (
-            <span className="flex items-center gap-1 text-xs">
-              <Clock size={12} />
-              {formatDuration(duration)}
-            </span>
-          )}
+          <Clock size={14} />
+          مدت زمان
         </span>
-        <span className="text-2xl font-black text-accent">{formatPrice(total)}</span>
+        <span className="text-xl font-black text-accent">{formatDuration(duration)}</span>
       </div>
       <p className="mt-2 text-xs text-muted">پرداخت در سالون انجام می‌شود.</p>
 

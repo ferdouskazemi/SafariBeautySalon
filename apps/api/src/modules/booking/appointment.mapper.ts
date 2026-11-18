@@ -41,7 +41,6 @@ export function toConfirmationDto(a: AppointmentWithRelations): BookingConfirmat
   return {
     code: a.code,
     startsAt: a.startsAt.toISOString(),
-    price: a.price,
     offeringName: offeringOf(a).name,
     staffName: a.staff.fullName,
   };
@@ -70,7 +69,6 @@ export function toAppointmentDto(a: AppointmentWithRelations): AppointmentDto {
     startsAt: a.startsAt.toISOString(),
     endsAt: a.endsAt.toISOString(),
     status: a.status,
-    price: a.price,
     note: a.note,
     offering: offeringOf(a),
     staff: a.staff,

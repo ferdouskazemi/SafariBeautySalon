@@ -3,10 +3,12 @@ import { ApiTags } from '@nestjs/swagger';
 import {
   historyQuerySchema,
   scheduleQuerySchema,
+  updateAppointmentDurationSchema,
   updateAppointmentStatusSchema,
   type AppointmentDto,
   type HistoryQuery,
   type ScheduleQuery,
+  type UpdateAppointmentDurationData,
   type UpdateAppointmentStatusData,
 } from '@safari/shared';
 import { ZodBody, ZodQuery } from '../../common/validation/zod-validation.js';
@@ -45,5 +47,15 @@ export class ScheduleController {
     @ZodBody(updateAppointmentStatusSchema) body: UpdateAppointmentStatusData,
   ): Promise<AppointmentDto> {
     return this.booking.updateStatus(user, id, body.status);
+  }
+
+  /** Managers only: shorten an appointment that took less time than booked. */
+  @Auth('ADMIN')
+  @Patch(':id/duration')
+  shortenDuration(
+    @Param('id') id: string,
+    @ZodBody(updateAppointmentDurationSchema) body: UpdateAppointmentDurationData,
+  ): Promise<AppointmentDto> {
+    return this.booking.shortenDuration(id, body.durationMinutes);
   }
 }

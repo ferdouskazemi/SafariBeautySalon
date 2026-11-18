@@ -5,14 +5,14 @@ import { motion } from 'motion/react';
 import Link from 'next/link';
 import { useId, useState } from 'react';
 import { cn } from '@/shared/lib/cn';
-import { formatDuration, formatPrice } from '@/shared/lib/format';
+import { formatDuration } from '@/shared/lib/format';
 
 interface ServiceMenuProps {
   services: ServiceDto[];
   categories: ServiceCategory[];
 }
 
-/** Accessible tabs (one per category) over a price list. */
+/** Accessible tabs (one per category) over the list of services. */
 export function ServiceMenu({ services, categories }: ServiceMenuProps) {
   const [active, setActive] = useState(categories[0]);
   const baseId = useId();
@@ -83,12 +83,7 @@ export function ServiceMenu({ services, categories }: ServiceMenuProps) {
                   <p className="mt-1 text-sm text-muted">{service.description}</p>
                 )}
               </div>
-              <div className="flex items-baseline gap-4 sm:flex-col sm:items-end sm:gap-1">
-                <span className="font-bold">{formatPrice(service.price)}</span>
-                <span className="text-xs text-muted">
-                  {formatDuration(service.durationMinutes)}
-                </span>
-              </div>
+              <span className="text-sm text-muted">{formatDuration(service.durationMinutes)}</span>
             </Link>
           </li>
         ))}

@@ -5,7 +5,7 @@ import type { BookingConfirmationDto } from '@safari/shared';
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
 import { salonWhatsAppUrl } from '@/shared/config/site';
-import { formatLongDate, formatPrice, formatTime } from '@/shared/lib/format';
+import { formatLongDate, formatTime } from '@/shared/lib/format';
 import { buttonStyles, ButtonLink } from '@/shared/ui/button';
 
 /** The message the customer sends to the salon's WhatsApp; the salon sees it from their real number. */
@@ -65,8 +65,7 @@ export function BookingSuccess({ confirmation }: { confirmation: BookingConfirma
       </div>
 
       <p className="mt-6 text-sm">
-        مبلغ: <span className="font-bold">{formatPrice(confirmation.price)}</span>
-        <span className="text-muted"> (پرداخت در سالون)</span>
+        <span className="text-muted">پرداخت در سالون انجام می‌شود.</span>
       </p>
 
       <div className="mt-6 rounded-[var(--radius-field)] border border-line-strong p-4">

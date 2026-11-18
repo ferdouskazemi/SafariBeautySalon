@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { photos } from '@/shared/config/photos';
 import { cn } from '@/shared/lib/cn';
-import { formatDuration, formatPrice } from '@/shared/lib/format';
+import { formatDuration } from '@/shared/lib/format';
 import { Container, SectionTitle } from '@/shared/ui/container';
 import { EmptyState } from '@/shared/ui/feedback';
 import { Reveal } from '@/shared/ui/reveal';
@@ -44,20 +44,6 @@ export async function PackagesSection() {
   );
 }
 
-function PriceLine({ pkg }: { pkg: PackageDto }) {
-  const saving = pkg.regularPrice - pkg.price;
-  return (
-    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-      <span className="text-2xl font-black">{formatPrice(pkg.price)}</span>
-      {saving > 0 && (
-        <span className="text-sm text-muted line-through decoration-accent/60">
-          {formatPrice(pkg.regularPrice)}
-        </span>
-      )}
-    </div>
-  );
-}
-
 function FeaturedPackage({ pkg }: { pkg: PackageDto }) {
   return (
     <Link
@@ -92,12 +78,9 @@ function FeaturedPackage({ pkg }: { pkg: PackageDto }) {
         ))}
       </ul>
       <div className="mt-8 flex items-end justify-between gap-4">
-        <div>
-          <PriceLine pkg={pkg} />
-          <p className="mt-1 flex items-center gap-1.5 text-sm text-muted">
-            <Clock size={14} /> {formatDuration(pkg.durationMinutes)}
-          </p>
-        </div>
+        <p className="flex items-center gap-1.5 text-lg font-bold">
+          <Clock size={18} /> {formatDuration(pkg.durationMinutes)}
+        </p>
         <span className="grid size-14 place-items-center rounded-full bg-accent text-on-accent transition duration-300 ease-out-expo group-hover:-translate-x-1">
           <ArrowLeft size={22} weight="bold" />
         </span>
@@ -126,10 +109,9 @@ function PackageTile({ pkg, tone }: { pkg: PackageDto; tone: string }) {
       <p className="text-sm leading-relaxed text-muted">
         {pkg.services.map((s) => s.name).join('، ')}
       </p>
-      <div className="mt-auto flex items-baseline justify-between gap-4">
-        <PriceLine pkg={pkg} />
-        <span className="text-sm text-muted">{formatDuration(pkg.durationMinutes)}</span>
-      </div>
+      <p className="mt-auto flex items-center gap-1.5 text-sm text-muted">
+        <Clock size={14} /> {formatDuration(pkg.durationMinutes)}
+      </p>
     </Link>
   );
 }

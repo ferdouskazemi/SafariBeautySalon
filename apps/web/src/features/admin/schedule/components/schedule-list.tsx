@@ -4,25 +4,29 @@ import {
   ArrowCounterClockwise,
   CalendarBlank,
   Check,
+  Clock,
   Phone,
   UserMinus,
   X,
 } from '@phosphor-icons/react';
 import {
   APPOINTMENT_STATUS_LABELS,
+  MIN_APPOINTMENT_MINUTES,
   type AppointmentDto,
   type AppointmentStatus,
   type DateKey,
 } from '@safari/shared';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { sessionQuery } from '@/features/auth/api';
 import { cn } from '@/shared/lib/cn';
-import { formatPrice, formatTime } from '@/shared/lib/format';
+import { formatDuration, formatTime } from '@/shared/lib/format';
 import { errorMessage } from '@/shared/lib/http';
+import { useHydrated } from '@/shared/lib/use-hydrated';
 import { Button, buttonStyles } from '@/shared/ui/button';
 import { Dialog } from '@/shared/ui/dialog';
 import { Badge, EmptyState, Skeleton } from '@/shared/ui/feedback';
-import { scheduleQuery, useUpdateAppointmentStatus } from '../api';
+import { scheduleQuery, useShortenAppointment, useUpdateAppointmentStatus } from '../api';
 import { OfferingChips } from '../offering-colors';
 
 const STATUS_TONES = {
@@ -75,7 +79,12 @@ function AppointmentRow({
 }) {
   const updateStatus = useUpdateAppointmentStatus();
   const [confirmingCancel, setConfirmingCancel] = useState(false);
+  const [shortening, setShortening] = useState(false);
+  const { data: user } = useQuery(sessionQuery);
+  // The session is cached on the client only, so wait for hydration before showing admin tools.
+  const isAdmin = useHydrated() && user?.role === 'ADMIN';
   const { status } = appointment;
+  const canShorten = isAdmin && (status === 'CONFIRMED' || status === 'COMPLETED');
   const inactive = status === 'CANCELLED' || status === 'NO_SHOW';
   // The API only accepts "done" / "no-show" once the appointment has started.
   const started = new Date(appointment.startsAt) <= new Date();
@@ -108,7 +117,7 @@ function AppointmentRow({
           <OfferingChips offering={appointment.offering} />
           <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted">
             {showStaff && <span>آرایشگر: {appointment.staff.fullName}</span>}
-            <span>{formatPrice(appointment.price)}</span>
+            <span>{formatDuration(minutesOf(appointment))}</span>
             <span>
               کد{' '}
               <span className="font-latin" dir="ltr">
@@ -136,6 +145,12 @@ function AppointmentRow({
         </a>
 
         <div className="ms-auto flex flex-wrap gap-2">
+          {canShorten && (
+            <Button size="sm" variant="ghost" onClick={() => setShortening(true)}>
+              <Clock size={16} />
+              کوتاه کردن زمان
+            </Button>
+          )}
           {status === 'CONFIRMED' ? (
             <>
               {started && (
@@ -189,6 +204,14 @@ function AppointmentRow({
         </div>
       </div>
 
+      {canShorten && (
+        <ShortenDialog
+          appointment={appointment}
+          open={shortening}
+          onClose={() => setShortening(false)}
+        />
+      )}
+
       <Dialog open={confirmingCancel} onClose={() => setConfirmingCancel(false)} title="لغو نوبت">
         <p className="leading-relaxed text-muted">
           نوبت <span className="font-bold text-fg">{appointment.customerName}</span> ساعت{' '}
@@ -208,5 +231,71 @@ function AppointmentRow({
         </div>
       </Dialog>
     </li>
+  );
+}
+
+const minutesOf = ({ startsAt, endsAt }: Pick<AppointmentDto, 'startsAt' | 'endsAt'>) =>
+  Math.round((Date.parse(endsAt) - Date.parse(startsAt)) / 60_000);
+
+/** Shorter lengths to pick from: every 5 minutes for short visits, every 15 for long ones. */
+function shorterDurations(current: number): number[] {
+  const step = current <= 60 ? 5 : 15;
+  const options: number[] = [];
+  for (let minutes = MIN_APPOINTMENT_MINUTES; minutes < current; minutes += step) {
+    options.push(minutes);
+  }
+  return options;
+}
+
+/** The manager picks how long the visit really took; the freed time opens up for booking. */
+function ShortenDialog({
+  appointment,
+  open,
+  onClose,
+}: {
+  appointment: AppointmentDto;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const shorten = useShortenAppointment();
+  const current = minutesOf(appointment);
+  const options = shorterDurations(current);
+
+  return (
+    <Dialog open={open} onClose={onClose} title="کوتاه کردن زمان نوبت">
+      <p className="leading-relaxed text-muted">
+        نوبت <span className="font-bold text-fg">{appointment.customerName}</span> الان{' '}
+        {formatDuration(current)} است ({formatTime(appointment.startsAt)} تا{' '}
+        {formatTime(appointment.endsAt)}). مدت واقعی کار را انتخاب کنید؛ بقیهٔ وقت برای رزرو آزاد
+        می‌شود.
+      </p>
+      {options.length === 0 ? (
+        <p className="mt-5 text-sm text-muted">این نوبت از این کوتاه‌تر نمی‌شود.</p>
+      ) : (
+        <div className="mt-5 grid grid-cols-3 gap-2">
+          {options.map((minutes) => (
+            <Button
+              key={minutes}
+              variant="secondary"
+              loading={shorten.isPending && shorten.variables?.durationMinutes === minutes}
+              disabled={shorten.isPending}
+              onClick={() =>
+                shorten.mutate(
+                  { id: appointment.id, durationMinutes: minutes },
+                  { onSuccess: onClose },
+                )
+              }
+            >
+              {formatDuration(minutes)}
+            </Button>
+          ))}
+        </div>
+      )}
+      <div className="mt-6 flex justify-end">
+        <Button variant="ghost" onClick={onClose}>
+          بستن
+        </Button>
+      </div>
+    </Dialog>
   );
 }

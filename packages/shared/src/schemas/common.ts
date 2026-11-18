@@ -42,9 +42,3 @@ export const optionalTextSchema = (max: number) =>
     .max(max, `حداکثر ${max} کاراکتر`)
     .nullish()
     .transform((v) => v || null);
-
-export const priceSchema = z
-  .number({ error: 'قیمت را وارد کنید' })
-  .int('قیمت باید عدد صحیح باشد')
-  .min(0, 'قیمت نمی‌تواند منفی باشد')
-  .max(1_000_000, 'قیمت بیش از حد است');
