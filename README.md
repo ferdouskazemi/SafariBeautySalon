@@ -39,7 +39,7 @@ Requirements: Node 22+, pnpm 10, Docker.
 
 ```bash
 pnpm install
-docker compose up -d db                       # PostgreSQL on :5432
+docker compose up -d db                       # PostgreSQL on :5433
 cp apps/api/.env.example apps/api/.env        # then set real JWT secrets
 cp apps/web/.env.example apps/web/.env.local
 pnpm db:migrate                               # apply migrations

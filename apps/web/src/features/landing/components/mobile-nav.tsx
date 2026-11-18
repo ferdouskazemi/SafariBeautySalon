@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { siteNav } from '@/shared/config/site';
+import { ButtonLink } from '@/shared/ui/button';
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -44,9 +45,12 @@ export function MobileNav() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-x-0 top-16 z-[var(--z-overlay)] h-[calc(100dvh-4rem)] bg-bg/95 px-4 pt-6 backdrop-blur-xl"
+            className="fixed inset-x-0 top-16 z-[var(--z-overlay)] h-[calc(100dvh-4rem)] overflow-y-auto bg-bg px-4 pt-6 pb-8"
           >
-            <ul className="flex flex-col">
+            <ButtonLink href="/booking" size="lg" onClick={close} className="w-full">
+              رزرو نوبت
+            </ButtonLink>
+            <ul className="mt-4 flex flex-col">
               {[
                 ...siteNav,
                 { href: '/calendar', label: 'تقویم نوبت‌ها' },
