@@ -84,7 +84,7 @@ export function SchedulePage() {
         <>
           <ScheduleGrid date={date} staffId={staffId || undefined} />
           <p className="mt-3 text-xs text-muted">
-            برای تماس با مشتری یا ثبت «انجام شد»، نمای «فهرست» را باز کنید.
+            برای تماس با مشتری، ثبت «انجام شد» یا کوتاه کردن زمان نوبت، نمای «فهرست» را باز کنید.
           </p>
         </>
       ) : (

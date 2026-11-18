@@ -215,10 +215,9 @@ function ConfirmContent({
           </p>
         )}
 
-        <div className="flex items-baseline justify-between border-t border-line pt-4">
-          <span className="text-sm text-muted">مدت زمان · پرداخت در سالون</span>
-          <span className="text-xl font-black text-accent">{formatDuration(duration)}</span>
-        </div>
+        <p className="border-t border-line pt-4 text-center text-sm text-muted">
+          پرداخت در سالون انجام می‌شود.
+        </p>
         <Button
           type="submit"
           size="lg"

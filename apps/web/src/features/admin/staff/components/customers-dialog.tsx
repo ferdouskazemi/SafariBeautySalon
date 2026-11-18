@@ -40,7 +40,7 @@ export function CustomersDialog({ member, onClose }: { member: StaffDto; onClose
         <EmptyState title="هنوز مشتری‌ای ندارد" />
       ) : (
         <div className="grid gap-5">
-          <dl className="grid grid-cols-2 gap-2 text-center">
+          <dl className="grid grid-cols-3 gap-2 text-center">
             <Stat label="مشتری" value={formatNumber(customers.size)} />
             <Stat label="نوبت‌های انجام‌شده" value={formatNumber(done.length)} />
             <Stat label="نوبت‌های پیش‌رو" value={formatNumber(upcoming?.length ?? 0)} />
